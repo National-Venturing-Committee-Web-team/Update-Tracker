@@ -742,17 +742,21 @@ function trackRow(id){var t=TRK[id]||{};var st=t.status||"In review";
   "<label class='trk-l'>Status <select class='trk-status'>"+TRK_STATUSES.map(function(o){return "<option"+(o===st?" selected":"")+">"+o+"</option>";}).join("")+"</select></label>"+
   "<input class='trk-comment' placeholder='Comment / approver\u2026' value=\""+escAttr(t.comment)+"\"></div>";}
 function flashSaved(m){var el=$("#trkSaved");if(!el)return;el.textContent="\u2713 "+m;el.style.opacity="1";clearTimeout(window.__sv);window.__sv=setTimeout(function(){el.style.opacity=".5";},1600);}
-const CLOUD_URL="https://jsonblob.com/api/jsonBlob/019e9467-542a-7bbd-801f-9f1370f0fd9b";
+var CLOUD={binId:"",key:"",keyHeader:"X-Master-Key"};
+function cloudReady(){return !!(CLOUD.binId&&CLOUD.key);}
+function cloudHeaders(extra){var h={"Content-Type":"application/json","X-Bin-Meta":"false"};h[CLOUD.keyHeader]=CLOUD.key;if(extra){for(var k in extra){h[k]=extra[k];}}return h;}
+var BIN_BASE="https://api.jsonbin.io/v3/b/";
 let DIRTY=new Set(),__pushT=null,__pushing=false;
 function setSync(t,cls){var el=$("#trkSync");if(el){el.textContent=t;el.className="trk-saved "+(cls||"");}}
 function schedulePush(){clearTimeout(__pushT);setSync("Saving\u2026");__pushT=setTimeout(cloudPush,700);}
 async function cloudPush(){
+ if(!cloudReady()){setSync("Local only \u2014 saved on this device","warn");return;}
  if(__pushing){schedulePush();return;} __pushing=true;
  try{
-  var r=await fetch(CLOUD_URL,{headers:{"Accept":"application/json"}});
-  var remote=r.ok?await r.json():{}; if(typeof remote!=="object"||!remote)remote={};
+  var r=await fetch(BIN_BASE+CLOUD.binId+"/latest",{headers:cloudHeaders()});
+  var remote=r.ok?await r.json():{}; if(typeof remote!=="object"||!remote||Array.isArray(remote))remote={};
   DIRTY.forEach(function(id){remote[id]=TRK[id];});
-  var p=await fetch(CLOUD_URL,{method:"PUT",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(remote)});
+  var p=await fetch(BIN_BASE+CLOUD.binId,{method:"PUT",headers:cloudHeaders({"X-Bin-Versioning":"false"}),body:JSON.stringify(remote)});
   if(!p.ok)throw new Error("PUT "+p.status);
   TRK=remote; DIRTY.clear(); try{localStorage.setItem(TRK_KEY,JSON.stringify(TRK));}catch(e){}
   setSync("\u2713 Synced "+new Date().toLocaleTimeString(),"ok");
@@ -760,9 +764,10 @@ async function cloudPush(){
  __pushing=false;
 }
 async function cloudPull(){
+ if(!cloudReady())return;
  try{
-  var r=await fetch(CLOUD_URL,{headers:{"Accept":"application/json"}}); if(!r.ok)return;
-  var remote=await r.json(); if(typeof remote!=="object"||!remote)return;
+  var r=await fetch(BIN_BASE+CLOUD.binId+"/latest",{headers:cloudHeaders()}); if(!r.ok)return;
+  var remote=await r.json(); if(typeof remote!=="object"||!remote||Array.isArray(remote))return;
   var active=document.activeElement;
   Object.keys(remote).forEach(function(id){
    if(id==="_meta"||DIRTY.has(id))return;
@@ -834,7 +839,13 @@ rowsEl.addEventListener("click",function(e){
 });
 rowsEl.addEventListener("change",function(e){var trk=e.target.closest&&e.target.closest(".trk");if(!trk)return;var id=trk.dataset.id;TRK[id]=TRK[id]||{};if(e.target.classList.contains("trk-status")){TRK[id].status=e.target.value;var b=trk.querySelector(".trk-badge");b.textContent=e.target.value;b.className="trk-badge "+stCls(e.target.value);DIRTY.add(id);saveTRK();updateTrkSummary();refreshAllPageStats();}});
 rowsEl.addEventListener("input",function(e){var trk=e.target.closest&&e.target.closest(".trk");if(!trk)return;if(e.target.classList.contains("trk-comment")){var id=trk.dataset.id;TRK[id]=TRK[id]||{};TRK[id].comment=e.target.value;DIRTY.add(id);saveTRK();}});
-(function(){var rf=$("#trkRefresh");if(rf)rf.onclick=cloudPull; cloudPull(); setInterval(function(){if(!DIRTY.size)cloudPull();},15000); if(document.addEventListener){document.addEventListener("visibilitychange",function(){if(!document.hidden&&!DIRTY.size)cloudPull();});}})();
+(function(){var rf=$("#trkRefresh");if(rf)rf.onclick=cloudPull;
+ setSync("Connecting\u2026");
+ fetch("config.json?_="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(c){if(c&&c.binId){CLOUD.binId=c.binId;CLOUD.key=c.key||"";if(c.keyHeader)CLOUD.keyHeader=c.keyHeader;}}).catch(function(){}).then(function(){
+   if(!cloudReady()){setSync("Local only \u2014 sharing not configured","warn");return;}
+   cloudPull();
+   if(document.addEventListener){document.addEventListener("visibilitychange",function(){if(!document.hidden&&!DIRTY.size)cloudPull();});}
+ });})();
 
 // source issues (handbook itself)
 const SOURCEISSUES=[{issue:"Territory not applied consistently (area/region → territory)",sev:"med",why:"For Venturing, areas and regions were replaced by territories (councils and national remain). Each remaining area/region reference is below.",items:[{page:"Page 188",cur:"Several of the regional Venturing websites provide a helpful listing of places your crew can go for its adventures: • www.",rep:"[Strike the entire paragraph and the four regional-website bullets that follow it — these former-Region sites (crventuring, wrventuring, nerventuring, srventuring) no longer exist.]"},{page:"Page 208",cur:"Participate in at least three additional (for a total of seven) Tier II or Tier III adventures at the crew, district, council, area, regional, or national level.",rep:"Participate in at least three additional (for a total of seven) Tier II or Tier III adventures at the crew, district, council, territory, or national level."}]},
