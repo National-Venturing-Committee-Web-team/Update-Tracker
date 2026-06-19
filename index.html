@@ -211,6 +211,16 @@ tr.haskids td{border-bottom:0}
 .p-prog{background:#fdeecd;color:#7a5512;border-color:#ecd9a5}
 .p-todo{background:#fbe0e6;color:#8a2540;border-color:#f0c2cd}
 .p-none{background:#eef1f5;color:#67727f;border-color:#dde3ea}
+
+/* Add Item admin panel */
+.airow{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.aiform label{display:flex;flex-direction:column;font-size:12px;font-weight:700;gap:4px;flex:1;min-width:220px}
+.aiform input,.aiform select,.aiform textarea{font:inherit;font-size:13px;font-weight:400;padding:7px 9px;border:1px solid var(--line,#d8dee6);border-radius:7px;background:#fff;color:var(--ink,#1c2530)}
+.aicorr{display:grid;grid-template-columns:1fr 1fr;gap:7px;border:1px solid var(--line,#d8dee6);border-radius:9px;padding:9px;margin-bottom:9px;background:#f6f9fc}
+.aicorr .ai_c_del{grid-column:1 / -1;justify-self:end}
+#additem .btn{cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:8px 15px;border-radius:8px;border:1px solid var(--v-green,#1f5a2a);background:var(--v-green,#1f5a2a);color:#fff}
+#additem .btn.ghost{background:#fff;color:var(--ink,#1c2530);border-color:var(--line,#d8dee6)}
+#additem .muted{color:#67727f;font-size:12px}
 </style>
 </head>
 <body>
@@ -231,6 +241,7 @@ tr.haskids td{border-bottom:0}
     <button class="tab" data-t="accuracy">Accuracy Review</button>
     <button class="tab" data-t="brand">Brand Standards</button>
     <button class="tab" data-t="overview">Overview</button>
+    <button class="tab" data-t="additem">+ Add Item</button>
   </div>
 </nav>
 <div class="wrap">
@@ -332,6 +343,38 @@ tr.haskids td{border-bottom:0}
         <li><b>Review</b> &mdash; Reviewer checks brand + accuracy &rarr; <i>In review</i> &rarr; <i>Approved</i>.</li>
         <li><b>Publish</b> &mdash; Web/Digital publishes &rarr; <i>Published</i>.</li>
       </ol>
+    </div>
+  </section>
+
+  <section class="panel" id="additem">
+    <h2 class="sec">Add a Page / Correction</h2>
+    <p class="lead">Fill this in to generate an entry for <code>data.json</code>. New items show up in the tracker immediately here so you can check them. To make them permanent for everyone, copy the updated <code>data.json</code> at the bottom and commit it to the repo.</p>
+    <div class="bcard aiform">
+      <div class="airow">
+        <label>Page name<input id="ai_page" placeholder="e.g. New Adventure Page"></label>
+        <label>URL (path or full)<input id="ai_url" placeholder="/programs/venturing/..."></label>
+      </div>
+      <div class="airow">
+        <label>Section<input id="ai_section" placeholder="e.g. Crew Resources"></label>
+        <label>Owning team<input id="ai_owner" placeholder="e.g. Program Subcommittee"></label>
+      </div>
+      <div class="airow">
+        <label>Updated to match handbook<select id="ai_acc"><option>Needs fix</option><option>Verified</option></select></label>
+        <label>Priority<select id="ai_pri"><option>High</option><option selected>Medium</option><option>Low</option></select></label>
+      </div>
+      <h3 style="margin-top:14px">Corrections <span class="muted" style="font-weight:400">(optional &mdash; leave &ldquo;Replace&rdquo; blank to record it as a note)</span></h3>
+      <div id="ai_corr"></div>
+      <button class="btn ghost" id="ai_addcorr" type="button">+ Add another correction</button>
+      <div style="margin-top:14px">
+        <button class="btn" id="ai_add" type="button">Add to tracker &amp; data.json</button>
+        <span id="ai_msg" class="muted"></span>
+      </div>
+    </div>
+    <div class="bcard">
+      <h3>Your <code>data.json</code></h3>
+      <p class="muted">Copy this, replace the contents of <code>data.json</code> in your repo, and commit. The live site updates for everyone in ~30 seconds.</p>
+      <textarea id="ai_out" rows="12" style="width:100%;font-family:monospace;font-size:12px" readonly></textarea>
+      <div style="margin-top:8px"><button class="btn" id="ai_copy" type="button">Copy data.json</button></div>
     </div>
   </section>
 
@@ -915,6 +958,71 @@ var ADMIN=(function(){try{var s=(location.search||"")+(location.hash||"");try{if
 if(!ADMIN){document.querySelectorAll(".tab").forEach(function(b){if(b.dataset.t!=="callouts")b.style.display="none";});}
 
 chips($("#chips"));chips($("#chips2"));render();
+
+/* ---------- data.json overlay (manually-added pages/corrections) ---------- */
+var LOADED_DATA={pages:[]};
+function buildPageFromItem(it){
+  var n=PAGES.filter(function(x){return x._added;}).length+1;
+  return {id:"PG-A"+String(n).padStart(2,"0"),section:(it.section||"Added"),page:(it.page||"(untitled)"),url:(it.url||""),accuracy:(it.accuracy||"Needs fix"),priority:(it.priority||"Medium"),owner:(it.owner||""),reviewer:"",status:"Not started",ticket:"",notes:(it.notes||""),_added:true};
+}
+function addItemLive(it){
+  var p=buildPageFromItem(it);
+  PAGES.push(p);
+  if(Array.isArray(it.edits)&&it.edits.length){var url=pageFullUrl(p);var card={page:p.page,url:url,edits:it.edits};EDITS.push(card);EDITSBYURL[url]=card;}
+  chips($("#chips"));chips($("#chips2"));render();refreshAllPageStats();
+}
+function applyDataOverlay(d){ if(!d||!Array.isArray(d.pages))return; d.pages.forEach(function(it){addItemLive(it);}); }
+fetch("data.json?_="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(d){
+  if(d&&Array.isArray(d.pages)){ LOADED_DATA=d; applyDataOverlay(d); }
+  var o=document.querySelector("#ai_out"); if(o)o.value=JSON.stringify(LOADED_DATA,null,2);
+}).catch(function(){});
+
+/* ---------- admin Add-Item panel ---------- */
+(function(){
+  if(typeof ADMIN!=="undefined" && !ADMIN) return;
+  var corrWrap=$("#ai_corr"); if(!corrWrap) return;
+  function corrRow(){
+    var d=document.createElement("div"); d.className="aicorr";
+    d.innerHTML="<input class='ai_c_sec' placeholder='Heading / where on page'>"
+      +"<input class='ai_c_why' placeholder='Why (reason)'>"
+      +"<textarea class='ai_c_cur' rows='2' placeholder='Find this (current text)'></textarea>"
+      +"<textarea class='ai_c_rep' rows='2' placeholder='Replace with (corrected) \u2014 blank = note'></textarea>"
+      +"<button class='btn ghost ai_c_del' type='button'>remove</button>";
+    d.querySelector(".ai_c_del").onclick=function(){d.remove();};
+    corrWrap.appendChild(d);
+  }
+  corrRow();
+  var ac=$("#ai_addcorr"); if(ac)ac.onclick=corrRow;
+  function refreshOut(){var o=$("#ai_out"); if(o)o.value=JSON.stringify(LOADED_DATA,null,2);}
+  refreshOut();
+  var addBtn=$("#ai_add");
+  if(addBtn)addBtn.onclick=function(){
+    var page=($("#ai_page").value||"").trim();
+    if(!page){$("#ai_msg").textContent="Enter a page name first.";return;}
+    var it={section:($("#ai_section").value||"Added").trim(),page:page,url:($("#ai_url").value||"").trim(),accuracy:$("#ai_acc").value,priority:$("#ai_pri").value,owner:($("#ai_owner").value||"").trim()};
+    var edits=[];
+    corrWrap.querySelectorAll(".aicorr").forEach(function(r){
+      var sec=(r.querySelector(".ai_c_sec").value||"").trim();
+      var why=(r.querySelector(".ai_c_why").value||"").trim();
+      var cur=(r.querySelector(".ai_c_cur").value||"").trim();
+      var rep=(r.querySelector(".ai_c_rep").value||"").trim();
+      if(!sec&&!why&&!cur&&!rep)return;
+      if(cur&&rep)edits.push({sec:sec||"Edit",why:why,cur:cur,rep:rep});
+      else if(cur)edits.push({sec:sec||"Note",why:why,note:cur});
+      else if(why)edits.push({sec:sec||"Note",why:why,note:why});
+    });
+    if(edits.length)it.edits=edits;
+    if(!Array.isArray(LOADED_DATA.pages))LOADED_DATA.pages=[];
+    LOADED_DATA.pages.push(it);
+    addItemLive(it);
+    refreshOut();
+    $("#ai_msg").textContent="Added \u201c"+page+"\u201d \u2014 now copy data.json below to save it for everyone.";
+    ["ai_page","ai_url","ai_section","ai_owner"].forEach(function(id){var el=$("#"+id);if(el)el.value="";});
+    corrWrap.innerHTML=""; corrRow();
+  };
+  var cp=$("#ai_copy");
+  if(cp)cp.onclick=function(){var o=$("#ai_out");try{o.select();document.execCommand("copy");}catch(e){} if(navigator.clipboard){navigator.clipboard.writeText(o.value).catch(function(){});} cp.textContent="Copied \u2713"; setTimeout(function(){cp.textContent="Copy data.json";},1500);};
+})();
 </script>
 </body>
 </html>
