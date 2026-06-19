@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venturing.org Rebrand Tracker</title>
+<style>
+  :root{
+    --sa-red:#CE1126; --sa-blue:#003F87; --sa-dblue:#003366;
+    --sa-tan:#D6CEBD; --sa-ltan:#E9E9E4; --sa-gray:#515354;
+    --v-green:#006B3F; --v-greendk:#00502F; --v-yellow:#FCD116;
+    --ink:#232528; --muted:#6b6f72; --paper:#FBFAF7; --card:#ffffff;
+    --line:#E4DFD3; --line2:#efece3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.45}
+  .wrap{max-width:none;margin:0 auto;padding:0 18px 60px}
+  /* masthead */
+  header{background:var(--ink);color:#fff;border-bottom:5px solid var(--v-green);position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:var(--v-green);opacity:.18;transform:rotate(45deg)}
+  .mast{max-width:none;margin:0 auto;padding:22px 18px 18px;position:relative;z-index:1}
+  .kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--v-yellow);font-weight:bold}
+  h1{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:28px;margin:4px 0 2px;letter-spacing:.3px}
+  .sub{color:#cfd2d4;font-size:13px}
+  .tagband{margin-top:10px;font-size:12px;color:#aeb2b4}
+  .tagband b{color:var(--v-yellow)}
+  /* tabs */
+  nav{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(0,0,0,.03)}
+  .tabs{max-width:none;margin:0 auto;display:flex;flex-wrap:wrap;gap:2px;padding:0 12px}
+  .tab{appearance:none;border:none;background:none;font-family:inherit;font-size:13px;font-weight:bold;color:var(--muted);
+    padding:13px 16px;cursor:pointer;border-bottom:3px solid transparent;letter-spacing:.02em}
+  .tab:hover{color:var(--ink)}
+  .tab.active{color:var(--v-greendk);border-bottom-color:var(--v-green)}
+  /* panels */
+  .panel{display:none;padding-top:22px}
+  .panel.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  h2.sec{font-family:Georgia,serif;font-size:21px;margin-bottom:3px}
+  .lead{color:var(--muted);font-size:13px;margin-bottom:16px;max-width:760px}
+  /* summary chips */
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+  .chip{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:104px}
+  .chip .n{font-size:22px;font-weight:bold;font-family:Georgia,serif}
+  .chip .l{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .chip.total{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip.total .l{color:#c9ccce}
+  /* toolbar */
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .toolbar input,.toolbar select{font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--line);
+    border-radius:8px;background:#fff;color:var(--ink)}
+  .toolbar input{flex:1;min-width:180px}
+  .toolbar .reset{cursor:pointer;background:var(--ltan);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-weight:bold}
+  /* table */
+  .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{position:sticky;top:0;background:var(--v-greendk);color:#fff;text-align:left;font-size:11px;letter-spacing:.04em;
+    text-transform:uppercase;padding:10px 10px;cursor:pointer;white-space:nowrap;border-bottom:2px solid var(--v-green)}
+  th:hover{background:var(--v-green)}
+  th .arrow{opacity:.5;font-size:9px}
+  td{padding:9px 10px;border-bottom:1px solid var(--line2);vertical-align:top}
+  tbody tr:nth-child(even){background:#faf9f4}
+  tbody tr:hover{background:#f2f7f3}
+  .pid{font-weight:bold;color:var(--v-greendk);white-space:nowrap}
+  .url{color:var(--sa-blue);font-size:11.5px;font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
+  .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:bold;white-space:nowrap}
+  .b-both{background:#e7f0ea;color:var(--v-greendk)} .b-rb{background:#eef2f8;color:var(--sa-dblue)}
+  .ac-Needsfix{background:#fdecec;color:#b3261e} .ac-Scanned{background:#eef2f8;color:#1c5a8a}
+  .ac-Verified{background:#e2efda;color:#356b2a} .ac-Notreviewed{background:#f1f1f1;color:#555}
+  .p-High{color:var(--sa-red);font-weight:bold} .p-Medium{color:#b8860b;font-weight:bold} .p-Low{color:var(--muted)}
+  select.status{font-family:inherit;font-weight:bold;font-size:11.5px;border:1px solid var(--line);border-radius:20px;padding:3px 6px;cursor:pointer}
+  .st-Notstarted{background:#f1f1f1;color:#555}
+  .st-Inprogress{background:#fff3cf;color:#8a6d00}
+  .st-Inreview{background:#dcebf7;color:#1c5a8a}
+  .st-Approved{background:#e2efda;color:#356b2a}
+  .st-Published{background:#bfe0a8;color:#1f5910}
+  .tix{width:74px;font-family:inherit;font-size:11.5px;border:1px dashed var(--line);border-radius:6px;padding:3px 5px}
+  .note{width:100%;min-width:150px;font-family:inherit;font-size:11.5px;border:1px solid transparent;border-radius:6px;padding:3px 5px;background:transparent;resize:vertical}
+  .note:focus,.tix:focus{outline:none;border-color:var(--v-green);background:#fff}
+  /* cards (teams) */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+  .tcard{background:#fff;border:1px solid var(--line);border-left:5px solid var(--v-green);border-radius:10px;padding:14px 16px}
+  .tcard.youth{border-left-color:var(--v-yellow)}
+  .tcard.gov{border-left-color:var(--sa-red)}
+  .tcard.staff{border-left-color:var(--sa-blue)}
+  .tcard h3{font-size:15px;margin-bottom:2px}
+  .ttype{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:7px}
+  .tcard p{font-size:12.5px;color:#444}
+  /* rules */
+  .ruletable td:nth-child(1){font-weight:bold}
+  tr.exception{background:#fff6df !important}
+  tr.exception td:nth-child(2){color:var(--sa-red);font-weight:bold}
+  .tag{display:inline-block;font-size:10px;font-weight:bold;padding:2px 7px;border-radius:5px;background:var(--sa-red);color:#fff}
+  .tag.ok{background:var(--v-green)}
+  /* brand */
+  .brandgrid{display:grid;grid-template-columns:1fr;gap:18px}
+  .bcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .bcard.feature{border-top:5px solid var(--v-green);background:linear-gradient(180deg,#f6fbf8,#fff)}
+  .bcard h3{font-family:Georgia,serif;font-size:18px;margin-bottom:10px}
+  .swatches{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 4px}
+  .sw{border:1px solid var(--line);border-radius:9px;overflow:hidden;width:118px}
+  .sw .col{height:54px}
+  .sw .meta{padding:6px 8px;font-size:11px}
+  .sw .meta b{display:block;font-size:11.5px}
+  .sw .meta code{color:var(--muted);font-size:10.5px}
+  .kv{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-size:13px;margin-top:4px}
+  .kv dt{font-weight:bold;color:var(--v-greendk)}
+  .kv dd{color:#333}
+  .pill{display:inline-block;background:var(--ltan);border:1px solid var(--line);border-radius:20px;padding:3px 10px;font-size:12px;margin:2px 3px 2px 0}
+  .donts li{margin-left:18px;font-size:12.5px;color:#444}
+  .src{font-size:11px;color:var(--muted);margin-top:10px;font-style:italic}
+  .note-bar{background:#fff8e1;border:1px solid #f0e0a8;border-radius:8px;padding:10px 14px;font-size:12.5px;margin-bottom:16px}
+  /* callouts */
+  .co{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;border-left:5px solid var(--v-green)}
+  .co.verify{border-left-color:#b8860b}
+  .co.decision{border-left-color:var(--sa-red)}
+  .co-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
+  .co-num{font-family:Georgia,serif;font-weight:bold;font-size:16px;color:var(--v-greendk)}
+  .co-title{font-weight:bold;font-size:14.5px;flex:1;min-width:200px}
+  .co-pages{margin:2px 0 10px}
+  .co-pages .pg{display:inline-block;background:var(--ltan);border:1px solid var(--line);border-radius:20px;padding:2px 9px;font-size:11px;margin:2px 4px 2px 0}
+  .co-issue{font-size:13px;color:#333;margin-bottom:10px}
+  .diff{display:grid;grid-template-columns:1fr;gap:8px;margin:8px 0}
+  .diff>div{border-radius:8px;padding:9px 12px;font-size:12.5px;line-height:1.5}
+  .was{background:#fdecec;border:1px solid #f3c9c9}
+  .was b{color:#b3261e} .now{background:#e7f4ea;border:1px solid #bfe0c8}
+  .now b{color:var(--v-greendk)}
+  .co-src{font-size:11.5px;color:var(--muted);font-style:italic;margin-top:6px}
+  @media(min-width:720px){.diff{grid-template-columns:1fr 1fr}}
+  /* paste pairs */
+  .pair{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--line2)}
+  .pair:first-child{border-top:none}
+  .pfind{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:#fdecec;border:1px solid #f3c9c9;border-radius:6px;padding:4px 8px;color:#b3261e}
+  .parrow{color:var(--muted);font-weight:bold}
+  .preplace{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;border:1px solid #bfe0c8;background:#e7f4ea;color:var(--v-greendk);border-radius:6px;padding:4px 8px;flex:1;min-width:140px}
+  .copybtn{appearance:none;border:1px solid var(--v-green);background:var(--v-green);color:#fff;font-family:inherit;font-weight:bold;font-size:11px;border-radius:6px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+  .copybtn:hover{background:var(--v-greendk)}
+  .copybtn.done{background:#fff;color:var(--v-greendk)}
+  .decision-box{background:#fdeeee;border:1px solid #f3c9c9;border-radius:8px;padding:9px 12px;font-size:12.5px;color:#7a1d16;margin-top:6px}
+  .loc-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:bold;margin:10px 0 4px}
+  .co-locs{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+  .loc{display:flex;flex-direction:column;gap:8px;background:#faf9f4;border:1px solid var(--line2);border-radius:8px;padding:9px 11px}
+  .loc-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
+  .loc-pg{font-weight:bold;font-size:12.5px;color:var(--ink)}
+  .loc-sec{flex:1;min-width:160px;font-size:12px;color:#555}
+  .loc-link{font-size:11.5px;font-weight:bold;color:var(--sa-blue);text-decoration:none;white-space:nowrap}
+  .loc-link:hover{text-decoration:underline}
+  .blockbox{border:1px solid #bfe0c8;border-radius:8px;overflow:hidden;background:#fff}
+  .blockbox-h{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#e7f4ea;padding:6px 10px;font-size:11px;font-weight:bold;color:var(--v-greendk);text-transform:uppercase;letter-spacing:.05em}
+  .blocktext{padding:10px 12px;font-size:13px;line-height:1.55;color:#1f2a22;white-space:pre-wrap}
+  /* source issues */
+  .si{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:12px;border-left:5px solid #b8860b}
+  .si.med{border-left-color:#b8860b} .si.low{border-left-color:#9aa0a3}
+  .si-head{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+  .si-sev{font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:5px;color:#fff}
+  .si-sev.med{background:#b8860b} .si-sev.low{background:#9aa0a3}
+  .si-title{font-weight:bold;font-size:14px}
+  .si p{font-size:12.5px;color:#333;margin-bottom:6px}
+  .si .refs{font-size:11.5px;color:var(--muted);font-style:italic}
+  footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+  .pgindex{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.9}
+  .pgindex a{color:var(--sa-blue);text-decoration:none}.pgindex a:hover{text-decoration:underline}
+  .pgcard{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:16px;overflow:hidden}
+  .pgcard-h{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--ink);color:#fff;padding:11px 16px}
+  .pgcard-t{font-family:Georgia,serif;font-size:16px;font-weight:bold;flex:1;min-width:150px}
+  .pgcard-n{font-size:11px;background:var(--v-green);padding:2px 9px;border-radius:20px;font-weight:bold}
+  .pgcard-h .loc-link{color:#bfe0c8}
+  .ed{padding:13px 16px;border-top:1px solid var(--line2)}.ed:first-child{border-top:none}
+  .ed-sec{font-weight:bold;font-size:13px;color:var(--v-greendk)}
+  .ed-why{font-size:11.5px;color:var(--muted);margin:2px 0 8px}
+  .ba{display:grid;grid-template-columns:1fr;gap:8px}
+  @media(min-width:760px){.ba{grid-template-columns:1fr 1fr}}
+  .ba-find,.ba-rep{border-radius:8px;padding:9px 12px;font-size:13px;line-height:1.5}
+  .ba-find{background:#fdecec;border:1px solid #f3c9c9}.ba-rep{background:#e7f4ea;border:1px solid #bfe0c8}
+  .ba-h{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:bold;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .ba-find .ba-h{color:#b3261e}.ba-rep .ba-h{color:var(--v-greendk)}
+  .ed-note{background:#fff8e1;border:1px solid #f0e0a8;border-radius:8px;padding:8px 11px;font-size:12px;margin-top:8px}
+
+.dx{background:#f6c9c9;color:#8a1f1f;text-decoration:line-through;border-radius:3px;padding:0 2px}.dn{background:#b7ecc3;color:#14622a;border-radius:3px;padding:0 2px;font-weight:600}
+
+.trk-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#16202e;border:1px solid #2a3a52;border-radius:8px;padding:8px 12px;margin:10px 0}
+.trk-sum{font-size:.85em}
+.trk-actions{display:flex;gap:8px;align-items:center}
+.trk-btn{background:#243a5e;color:#dce9ff;border:1px solid #38598c;border-radius:6px;padding:5px 10px;cursor:pointer;font:inherit;font-size:.85em}
+.trk-btn:hover{background:#2e4a73}
+.trk-saved{font-size:.8em;color:#8fe0a0;opacity:.5;transition:opacity .3s}
+.trk{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;padding-top:8px;border-top:1px dashed #cdd5e0}
+.trk-l{font-size:.82em;color:#5a6675;display:flex;gap:5px;align-items:center}
+.trk-status{background:#fff;color:#1f2733;border:1px solid #c5ced8;border-radius:5px;padding:3px 6px;font:inherit;font-size:.85em}
+.trk-comment{flex:1;min-width:200px;background:#fff;color:#1f2733;border:1px solid #c5ced8;border-radius:5px;padding:4px 8px;font:inherit;font-size:.85em}
+.trk-badge{display:inline-block;border-radius:10px;padding:1px 9px;font-size:.78em;font-weight:600}
+.s-rev{background:#4a3b14;color:#ffe9a8}
+.s-app{background:#143a5a;color:#bfe2ff}
+.s-prog{background:#5a3614;color:#ffd9a8}
+.s-pub{background:#1f5a2a;color:#cdffd6}
+
+.trk-saved.ok{color:#8fe0a0;opacity:1}
+.trk-saved.warn{color:#ffcf8f;opacity:1}
+
+.pgtoggle{cursor:pointer;color:#9cc3ff;font-weight:600;user-select:none}
+.pgtoggle:hover{text-decoration:underline}
+.arw{display:inline-block;width:1em;color:#7fb0ee}
+.edcount{font-size:.78em;color:#8fd0a0;font-weight:600;margin-left:4px}
+tr.det>td{background:#eef1f6;padding:0;border-top:0}
+.detwrap{padding:10px 14px 14px;display:grid;gap:10px}
+td.url a{color:#7fb0ee;text-decoration:none}
+td.url a:hover{text-decoration:underline}
+tr.haskids td{border-bottom:0}
+
+.pstat{display:inline-block;border-radius:10px;padding:2px 9px;font-size:.8em;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.p-done{background:#dff3e4;color:#14622a;border-color:#b7e0c4}
+.p-prog{background:#fdeecd;color:#7a5512;border-color:#ecd9a5}
+.p-todo{background:#fbe0e6;color:#8a2540;border-color:#f0c2cd}
+.p-none{background:#eef1f5;color:#67727f;border-color:#dde3ea}
+</style>
+</head>
+<body>
+<header>
+  <div class="mast">
+    <div class="kicker">Scouting America &middot; Venturing</div>
+    <h1>Venturing.org Rebrand &amp; Content Update</h1>
+    <div class="sub">Master tracker &mdash; rebrand verbiage, refresh content, assign owners &amp; sign-offs</div>
+    <div class="tagband"><b>Venturing&reg;.</b> Challenge Yourself. Challenge Your World. &nbsp;|&nbsp; rebrand effective Feb&nbsp;8&nbsp;2025</div>
+  </div>
+</header>
+<nav>
+  <div class="tabs">
+    <button class="tab" data-t="teams">Teams &amp; Committees</button>
+    <button class="tab" data-t="rules">Rebrand Rules</button>
+    <button class="tab active" data-t="callouts">Page Edits &amp; Tracker</button>
+    <button class="tab" data-t="source">Source Issues</button>
+    <button class="tab" data-t="accuracy">Accuracy Review</button>
+    <button class="tab" data-t="brand">Brand Standards</button>
+    <button class="tab" data-t="overview">Overview</button>
+  </div>
+</nav>
+<div class="wrap">
+
+  <!-- TRACKER -->
+  <section class="panel active" id="tracker">
+    <h2 class="sec">Page Tracker</h2>
+    <p class="lead">One row per page. <b>Owning Team</b> does the work; <b>Reviewer</b> signs off. Status, ticket ID and notes are editable here (held in this view only &mdash; we'll port to Excel later).</p>
+    <div class="chips" id="chips"></div>
+    <div class="toolbar">
+      <input id="q" placeholder="Search page, section, owner&hellip;">
+      <select id="fSection"></select>
+      <select id="fOwner"></select>
+      <select id="fStatus"></select>
+      <span class="reset" id="reset">Reset</span>
+    </div>
+    <div class="trk-bar"><span class="trk-sum" id="trkSum"></span><span class="trk-actions"><span id="trkSync" class="trk-saved">connecting…</span><button id="trkRefresh" class="trk-btn">↻ Refresh</button></span></div>
+    <div class="tablewrap">
+      <table id="tbl">
+        <thead><tr>
+          <th data-k="id">ID <span class="arrow">&#9660;</span></th>
+          <th data-k="section">Section</th>
+          <th data-k="page">Page / Title</th>
+          <th data-k="url">URL Path</th>
+          <th data-k="accuracy">Updated to match handbook</th>
+          <th data-k="priority">Priority</th>
+          <th data-k="owner">Owning Team</th>
+          <th>Status (auto)</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TEAMS -->
+  <section class="panel" id="teams">
+    <h2 class="sec">Teams &amp; Committees</h2>
+    <p class="lead">Placeholders mapped to how Venturing is governed (National Venturing Committee + NVOA). Rename to match your real structure &mdash; this drives every assignment on the tracker.</p>
+    <div class="grid" id="teamgrid"></div>
+  </section>
+
+  <!-- RULES -->
+  <section class="panel" id="rules">
+    <h2 class="sec">Rebrand Find-and-Replace Rules</h2>
+    <p class="lead">Grounded in the Scouting America Brand Guidelines (2024). <span class="tag">RED</span> rows are exceptions &mdash; do <b>not</b> auto-replace; they need a decision or careful handling.</p>
+    <div class="note-bar"><b>Reference confirmed &mdash; 2025 Guide to Advancement:</b> already uses &ldquo;Scouting America&rdquo; throughout, keeps &ldquo;Scouts BSA,&rdquo; never says &ldquo;Venturing BSA,&rdquo; and prints the copyright as <b>&copy;2025 Scouting America/Boy Scouts of America</b>. It also calls the four-level track the Venturing <b>ranks</b> (Venturing, Discovery, Pathfinder, Summit) &mdash; now <b>confirmed policy</b>: it&rsquo;s Ranks, not Awards, everywhere (the separate Ranger/Quest/TRUST awards stay &ldquo;awards&rdquo;).</div>
+    <div class="tablewrap">
+      <table class="ruletable">
+        <thead><tr><th>Find (old)</th><th>Replace with</th><th>Rule / Why</th><th>Sign-off</th></tr></thead>
+        <tbody id="ruleRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PAGE EDITS -->
+  <section class="panel" id="callouts">
+    <h2 class="sec">Page Edits &mdash; grouped by page</h2>
+    <p class="lead">Open your assigned page, then for each section below find the <b>red</b> text on the page and replace it with the <b>green</b> text (use Copy). Each card is one page; the count shows how many edits it needs.</p>
+    <div class="note-bar"><b>Full-site scan complete</b> &mdash; all five segments (40+ pages) read live through the browser. Mostly clean: About, Crew Resources, Training, Connect and the VOA subpages. Issues cluster in the rank pages (a retired scoutstuff.org link &mdash; now ScoutShop.org), the ALPS wording on two pages, the lone &ldquo;Venturing Award&rdquo; title/slug, and the VOA-landing apostrophe. Footer copyright (&ldquo;Boy Scouts of America&rdquo;) is left as-is per direction.</div>
+    
+    <div id="calloutList"></div>
+    <p class="src">Source: Handbook for Venturers, &copy;2026 Scouting America (uploaded).</p>
+  </section>
+
+  <!-- SOURCE ISSUES -->
+  <section class="panel" id="source">
+    <h2 class="sec">Source Issues &mdash; Handbook to review</h2>
+    <p class="lead">These are inconsistencies in the <b>Handbook itself</b> (the source document) &mdash; not website edits. Each shows the Handbook page, the text exactly as printed, and the suggested correction, for the program / literature team to fix in a future revision.</p>
+    <div id="sourceList"></div>
+  </section>
+
+  <!-- ACCURACY REVIEW -->
+  <section class="panel" id="accuracy">
+    <h2 class="sec">Accuracy Review &mdash; pages vs the Handbook</h2>
+    <p class="lead">Deep content check of each page against the 2026 Handbook (and Guide to Advancement). This goes beyond the issue-scan: it compares requirements, definitions and program facts. Status mirrors the Handbook Check column on the Page Tracker.</p>
+    <div class="note-bar"><b>Method:</b> every page was first issue-scanned live (branding, ALPS, Award/Rank, links). Pages below also got a line-by-line content comparison. Rank <b>requirement</b> pages are the priority because outdated requirements are the most consequential drift.</div>
+    <div id="accuracyList"></div>
+  </section>
+
+  <!-- BRAND -->
+  <section class="panel" id="brand">
+    <h2 class="sec">Brand Standards</h2>
+    <p class="lead">From the Scouting America Brand Guidelines (2024). Venturing standards first (your focus), then the org-wide primary brand to apply wherever Scouting America is referenced.</p>
+    <div class="brandgrid" id="brandgrid"></div>
+    <p class="src">Source: Scouting America Brand Guidelines, 2024 (uploaded). Colors shown as HEX from the guide.</p>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="panel" id="overview">
+    <h2 class="sec">Overview &amp; Workflow</h2>
+    <p class="lead">Suggested flow for each page, start to publish.</p>
+    <div class="chips" id="chips2"></div>
+    <div class="bcard">
+      <h3>Workflow</h3>
+      <ol style="margin-left:18px;font-size:13px;line-height:1.9">
+        <li><b>Inventory</b> &mdash; confirm the page list (starter set pulled from the live Venturing section).</li>
+        <li><b>Assign</b> &mdash; set Owning Team + Reviewer, adjust priority.</li>
+        <li><b>Draft</b> &mdash; Owning Team applies the Rebrand Rules + content updates &rarr; <i>In progress</i>.</li>
+        <li><b>Review</b> &mdash; Reviewer checks brand + accuracy &rarr; <i>In review</i> &rarr; <i>Approved</i>.</li>
+        <li><b>Publish</b> &mdash; Web/Digital publishes &rarr; <i>Published</i>.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    v1 working draft &middot; ~38 pages from the live Venturing section &middot; teams &amp; change-types are starting assumptions to confirm. Export to Excel anytime.
+  </footer>
+</div>
+
+<script>
+const PAGES = [
+ ["Program Home","Venturing (program home)","/programs/venturing/","Needs fix","High","Marketing","National Venturing Committee","program landing edits"],
+ ["Resources","Language of Scouting (style manual)","/resources/los/","Needs fix","Medium","Marketing + Literature","National Venturing Committee","Venturing glossary terms"],
+ ["About","About Venturing (landing)","/programs/venturing/about-venturing/","Verified","Medium","Marketing","National Venturing Committee"],
+ ["About","Our History","/programs/venturing/about-venturing/history/","Verified","Low","Program Subcommittee","National Venturing Committee"],
+ ["About","Learn More","/programs/venturing/about-venturing/learn-more/","Verified","Low","Marketing","National Venturing Committee"],
+ ["About","National Committee","/programs/venturing/about-venturing/national-committee/","Verified","Low","National Venturing Committee","National Venturing Committee"],
+ ["About","The ALPS Model","/programs/venturing/about-venturing/the-alps-model/","Verified","Medium","Program Subcommittee","National Venturing Committee"],
+ ["About","Uniform Guide","/programs/venturing/about-venturing/uniform-guide/","Needs fix","Low","Program Subcommittee + Literature","National Venturing Committee"],
+ ["About","Venturing Resources","/programs/venturing/about-venturing/venturing-resources/","Needs fix","Medium","Program Subcommittee + Literature","National Venturing Committee","territory"],
+ ["About","Venturing Terminology","/programs/venturing/about-venturing/venturing-terminology/","Needs fix","Medium","Program Subcommittee","National Venturing Committee","territory"],
+ ["Crew Resources","Crew Resources (landing)","/programs/venturing/crew-resources/","Verified","Medium","Program Subcommittee + Literature","National Venturing Committee"],
+ ["Crew Resources","Annual Program Planning","/programs/venturing/crew-resources/annual-program-planning/","Needs fix","Medium","Program Subcommittee + Literature","National Venturing Committee"],
+ ["Crew Resources","Marketing Toolbox","/programs/venturing/crew-resources/marketing-toolbox/","Verified","High","Marketing + Literature","National Venturing Committee"],
+ ["Crew Resources","National Noteworthy Crews","/programs/venturing/crew-resources/national-noteworthy-crews/","Verified","Low","NVOA - Program","National Venturing Committee"],
+ ["Crew Resources","Recruiting","/programs/venturing/crew-resources/recruiting/","Verified","High","Membership","National Venturing Committee"],
+ ["Crew Resources","Scholarships","/programs/venturing/crew-resources/scholarships/","Verified","Medium","Program Subcommittee","National Venturing Committee","No changes needed"],
+ ["Crew Resources","Start a Crew","/programs/venturing/crew-resources/start-a-crew/","Needs fix","High","Membership","National Venturing Committee","Safeguarding Youth"],
+ ["Awards & Advancement","Awards & Advancement (landing)","/programs/venturing/venturing-awards-and-advancement/","Verified","High","Advancement & Awards Subcommittee","National Venturing Committee"],
+ ["Awards & Advancement","Rank Advancement","/programs/venturing/venturing-awards-and-advancement/rank-advancement/","Needs fix","High","Advancement & Awards Subcommittee","National Venturing Committee","ALPS"],
+ ["Awards & Advancement","Venturing Rank","/programs/venturing/venturing-awards-and-advancement/rank-advancement/venturing-award/","Needs fix","High","Advancement & Awards Subcommittee","National Venturing Committee","Title+slug, scoutstuff, req 4"],
+ ["Awards & Advancement","Discovery Rank","/programs/venturing/venturing-awards-and-advancement/rank-advancement/discovery-rank/","Needs fix","High","Advancement & Awards Subcommittee","National Venturing Committee","Gendered, scoutstuff"],
+ ["Awards & Advancement","Pathfinder Rank","/programs/venturing/venturing-awards-and-advancement/rank-advancement/pathfinder-rank/","Needs fix","High","Advancement & Awards Subcommittee","National Venturing Committee","Gendered, scoutstuff"],
+ ["Awards & Advancement","Summit Rank","/programs/venturing/venturing-awards-and-advancement/rank-advancement/summit-rank/","Needs fix","High","Advancement & Awards Subcommittee","National Venturing Committee","Gendered, scoutstuff"],
+ ["Awards & Advancement","Leadership Awards","/programs/venturing/venturing-awards-and-advancement/leadership/","Needs fix","Medium","Advancement & Awards Subcommittee","National Venturing Committee","territory"],
+ ["Awards & Advancement","Specialty Awards","/programs/venturing/venturing-awards-and-advancement/specialty-awards/","Verified","Medium","Advancement & Awards Subcommittee","National Venturing Committee"],
+ ["Awards & Advancement","Awards FAQ","/programs/venturing/venturing-awards-and-advancement/venturing-awards-faq/","Verified","Medium","Advancement & Awards Subcommittee","National Venturing Committee"],
+ ["Training","Training (landing)","/programs/venturing/training/","Needs fix","Medium","Training Subcommittee","National Venturing Committee","Safeguarding Youth"],
+ ["Training","Adult Trainings","/programs/venturing/training/adult-trainings/","Needs fix","Medium","Training Subcommittee","National Venturing Committee","Safeguarding Youth + territory"],
+ ["Training","Advanced Youth Training","/programs/venturing/training/advanced-youth-training/","Verified","Medium","Training Subcommittee","National Venturing Committee"],
+ ["Training","ALPS Youth Training","/programs/venturing/training/alps-youth-training/","Verified","Medium","Training Subcommittee","National Venturing Committee","No changes needed"],
+ ["Training","Training Toolbox","/programs/venturing/training/training-toolbox/","Verified","Low","Training Subcommittee + Literature","National Venturing Committee"],
+ ["Connect","Connect (landing)","/programs/venturing/connect/","Needs fix","Low","NVOA - Communications","National Venturing Committee"],
+ ["Connect","Alumni Network","/programs/venturing/connect/alumni-network/","Verified","Medium","NVOA - Communications","National Venturing Committee"],
+ ["Connect","Latest Updates","/programs/venturing/connect/latest-updates/","Verified","Medium","NVOA - Communications","National Venturing Committee"],
+ ["Connect","Social Media","/programs/venturing/connect/social-media/","Needs fix","Low","NVOA - Communications","National Venturing Committee"],
+ ["VOA","VOA (landing)","/programs/venturing/voa/","Needs fix","Medium","NVOA - Administration","National Venturing Committee","Officers apostrophe"],
+ ["VOA","Apply to be a VOA Officer","/programs/venturing/voa/apply-to-be-a-voa-officer/","Needs fix","Low","NVOA - Administration","National Venturing Committee","territory"],
+ ["VOA","Council Standards of Venturing Excellence","/programs/venturing/voa/csve/","Verified","Medium","NVOA - Territory Support","National Venturing Committee"],
+ ["VOA","Looking to Start a VOA","/programs/venturing/voa/looking-to-start-a-voa/","Verified","Medium","NVOA - Administration","National Venturing Committee"],
+ ["VOA","Meet Your Advisors","/programs/venturing/voa/meet-your-advisors/","Verified","Low","NVOA - Administration","National Venturing Committee"],
+ ["VOA","Meet Your Officers","/programs/venturing/voa/meet-your-officers/","Verified","Low","NVOA - Administration","National Venturing Committee"],
+ ["VOA","Past NVOA Officers","/programs/venturing/voa/past-nvoa-officers/","Verified","Low","NVOA - Administration","National Venturing Committee"],
+ ["VOA","Request a NVOA Member","/programs/venturing/voa/request-a-nvoa-member/","Verified","Low","NVOA - Administration","National Venturing Committee"],
+ ["VOA","SOPs","/programs/venturing/voa/sops/","Needs fix","Low","Program Subcommittee + Literature","National Venturing Committee","forms/templates"],
+ ["VOA","Venturing Officers Association","/programs/venturing/voa/venturing-officers-association/","Verified","Low","NVOA - Administration","National Venturing Committee"],
+ ["VOA","VOA Insignia","/programs/venturing/voa/voa-insignia/","Needs fix","Low","NVOA - Administration","National Venturing Committee"]
+].map((r,i)=>({id:"PG-"+String(i+1).padStart(3,"0"),section:r[0],page:r[1],url:r[2],accuracy:r[3],priority:r[4],owner:r[5],reviewer:r[6],status:"Not started",ticket:"",notes:r[7]||""}));
+
+const STATUSES=["Not started","In progress","In review","Approved","Published"];
+const stClass=s=>"st-"+s.replace(/\s/g,"");
+
+const TEAMS=[
+ ["National Venturing Committee","Adult / Governance","gov","Final accountability & sign-off across all pages; resolves brand & policy questions."],
+ ["Program Subcommittee","Adult","","Terminology, Crew Resources, Annual Program Planning, SOPs, Resources."],
+ ["Advancement & Awards Subcommittee","Adult","","Awards & Advancement, rank pages, Leadership/Core/Specialty awards, Awards FAQ."],
+ ["Training Subcommittee","Adult","","All Training pages (adult, youth, ALPS, Training Toolbox)."],
+ ["Membership","Adult","","Recruiting, Start a Crew, joining flows &amp; growth content."],
+ ["Literature","Adult","","Publications, forms, toolboxes &amp; downloadable resources; alignment with official guides."],
+ ["Marketing","Adult","staff","Brand compliance with the Scouting America guide; Marketing Toolbox, campaigns &amp; visual standards."],
+ ["Web / Digital Team","Adult / Staff","staff","Publishing, redirects, broken links, technical QA after sign-off."],
+ ["Legal / Trademark","Adult / Staff","staff","Decisions on legal-entity name & copyright/trademark notices (see Rebrand Rules)."],
+ ["NVOA - Communications","Youth","youth","Connect pages: Latest Updates, Social Media, Alumni Network; youth-voice copy review."],
+ ["NVOA - Administration","Youth","youth","VOA org pages: Starting a VOA, Apply/Request, Meet Your Officers/Advisors, Insignia."],
+ ["NVOA - Program","Youth","youth","Youth-facing program & event content; Noteworthy Crews."],
+ ["NVOA - Territory Support","Youth","youth","Council/territory items: Standards of Venturing Excellence."]
+];
+
+const RULES=[
+ ["&lsquo;Area&rsquo; / &lsquo;Region&rsquo; &rarr; &lsquo;Territory&rsquo; &mdash; APPROVED","territory","APPROVED RULE. For Venturing, areas and regions are now territories. Replace &lsquo;crew, district, council, area, regional, or national&rsquo; with &lsquo;crew, district, council, territory, or national.&rsquo; Councils and National remain. (&lsquo;Region&rsquo; still exists elsewhere in Scouting, so only Venturing org-structure references change.)","No",false],
+ 
+ ["Boy Scouts of America","Scouting America","Primary brand swap in marketing & body copy.","No",false],
+ ["Venturing BSA","Venturing","Drop &lsquo;BSA&rsquo; from the program name (your request).","No",false],
+ ["Venturing, Boy Scouts of America","Venturing, Scouting America","Compound program + org references.","No",false],
+ ["BSA (standalone, the org)","Scouting America","Spell it out. There is NO new acronym &mdash; never use &lsquo;SA&rsquo;.","No",false],
+ ["BSA in item names (&lsquo;BSA swim test&rsquo;)","drop &lsquo;BSA&rsquo; &rarr; &lsquo;swim test&rsquo;","Guide drops &lsquo;BSA&rsquo; from item names rather than renaming.","No",false],
+ ["Scouts BSA","KEEP &mdash; Scouts BSA","Official retained sub-brand (ages 11&ndash;17). A blanket &lsquo;BSA&rsquo; replace breaks this.","No",true],
+ ["Venturing Officer&rsquo;s Association","Venturing Officers Association","Standardize the apostrophe inconsistency seen across pages.","No",false],
+ ["URLs / emails / domains with &lsquo;bsa&rsquo;","KEEP unchanged","Editing links/addresses breaks navigation & assets.","No",true],
+ ["Venturing&reg;, Prepared. For Life.&reg;","KEEP marks & &reg;","Guide: the &reg; must always appear; don&rsquo;t alter marks.","No",true],
+ ["Copyright / legal footers","Leave as-is","Per direction, not changing the copyright convention. Don&rsquo;t auto-replace &lsquo;BSA&rsquo; here either way.","No",false],
+ ["&lsquo;area, regional&rsquo; / &lsquo;area&rsquo; / &lsquo;region&rsquo; (org level)","&lsquo;territory&rsquo;","Org restructure: areas &amp; regions became territories. Handbook uses &lsquo;crew, district, council, territory, or national.&rsquo; Watch for council/district (those stay).","No",false],
+["Show whole paragraphs (no word-hunting)","full paragraph &rarr; corrected paragraph","When an edit changes anything inside a paragraph &mdash; especially more than one thing &mdash; show the ENTIRE current paragraph and the ENTIRE corrected paragraph, with the specific change(s) highlighted and called out, so volunteers never hunt for words in a block of text. This is the STANDARD for every page edit: always show the entire current paragraph and the entire corrected paragraph (never an isolated word), with every change in that paragraph fixed at once and highlighted. Only short headings/titles may stay brief.","No",false],
+  ["Venturing recognition: &lsquo;rank&rsquo; vs &lsquo;award&rsquo; (Discovery / Pathfinder / Summit)","use intentionally by context","Per committee: Discovery, Pathfinder, and Summit are BOTH ranks and awards &mdash; neither is incorrect. Individually, use &lsquo;rank&rsquo; or &lsquo;award.&rsquo; Collectively, use &lsquo;Venturing ranks,&rsquo; &lsquo;Venturing awards,&rsquo; or &lsquo;the Venturing recognition system.&rsquo; Use &lsquo;rank&rsquo; for program structure / progression / requirements / advancement; use &lsquo;award&rsquo; for achievement / recognition / audiences outside Scouting (preferred for Summit). Do not eliminate one term for the other &mdash; use each intentionally and consistently. Ranger / Quest / TRUST remain &lsquo;awards.&rsquo;","No",false],
+ ["&lsquo;ScoutBook&rsquo; (camelCase)","&lsquo;Scoutbook&rsquo;","Per the Language of Scouting, the correct spelling is &lsquo;Scoutbook&rsquo; (capital S, lowercase b) &mdash; NOT camelCase &lsquo;ScoutBook.&rsquo; (Reverses the earlier guidance.)","No",false],
+ ["&lsquo;Youth Protection&rsquo;","&lsquo;Safeguarding Youth&rsquo;","Rebrand: the term is now &lsquo;Safeguarding Youth.&rsquo; The Handbook already uses it; apply on the website. (For &lsquo;Youth Protection Training&rsquo; / &lsquo;YPT,&rsquo; confirm whether the program name and acronym also change.)","No",false],
+ ["&lsquo;scoutstuff.org&rsquo; (retired store URL)","&lsquo;ScoutShop.org&rsquo;","The Scout Shop store is ScoutShop.org. Replace any scoutstuff.org links (the handbook-purchase line on the rank pages). The Discovery page already uses ScoutShop.org.","No",false],
+ ["Historical references (&lsquo;founded&hellip;1910&rsquo;)","DECISION NEEDED","Legacy mentions may keep the old name. Review case by case.","Yes &mdash; Brand",true],
+ ["Logos / emblems / images with old name","Replace asset","Visual assets handled by Web/Digital + Brand, not text find/replace.","Yes &mdash; Brand",true]
+];
+
+const BRAND=`
+<div class="bcard feature">
+  <h3>Venturing &mdash; Sub-brand standard</h3>
+  <dl class="kv">
+    <dt>Brand platform</dt><dd><b>Venturing&reg;. Challenge Yourself. Challenge Your World.</b></dd>
+    <dt>Positioning</dt><dd>Where adventure meets purpose &mdash; empowering young men and women aged 14&ndash;20 to explore, lead, and thrive through outdoor challenge, service, and personal growth. Emphasis on teamwork and setting your own course.</dd>
+    <dt>Trademark</dt><dd>Snow-capped mountain, crossbar, and &ldquo;V&rdquo; on a field of green; the &reg; sits at the lower-right.</dd>
+  </dl>
+  <div class="swatches">
+    <div class="sw"><div class="col" style="background:#006B3F"></div><div class="meta"><b>Venturing Green</b><code>#006B3F &middot; PMS 349</code></div></div>
+    <div class="sw"><div class="col" style="background:#FCD116"></div><div class="meta"><b>Venturing Yellow</b><code>#FCD116 &middot; PMS 116</code></div></div>
+  </div>
+  <p style="font-size:12.5px;color:#444;margin-top:6px">Use Green as the primary, Yellow as accent. Scouting America gray hues pair well; the SA primary palette only sparingly; white is essential.</p>
+  <ul class="donts" style="margin-top:8px"><b style="font-size:12px">Don&rsquo;t:</b>
+    <li>reproduce in a tint or screen</li>
+    <li>place in color on a dark background</li>
+    <li>add drop shadow, bevel, or glow effects</li>
+  </ul>
+</div>
+
+<div class="bcard">
+  <h3>Scouting America &mdash; Primary (org-wide) brand</h3>
+  <dl class="kv">
+    <dt>Name</dt><dd>&ldquo;Scouting America&rdquo; replaces &ldquo;Boy Scouts of America.&rdquo; No acronym &mdash; never &ldquo;SA.&rdquo;</dd>
+    <dt>Taglines</dt><dd>Prepared. For Life.&reg; &nbsp;/&nbsp; Preparados para el futuro.&reg;</dd>
+    <dt>Personality</dt><dd><span class="pill">Trustworthy</span><span class="pill">Adventurous</span><span class="pill">Patriotic</span><span class="pill">Faithful</span></dd>
+    <dt>Voice</dt><dd>Friendly, encouraging; avoid jargon. Themes: Adventure, Leadership, Learning, Service.</dd>
+    <dt>Sub-brands</dt><dd>Cub Scouts &middot; Scouts BSA &middot; Venturing &middot; Sea Scouts (Scouts BSA keeps &ldquo;BSA&rdquo;).</dd>
+    <dt>Signature</dt><dd>The &reg; must always appear; don&rsquo;t recolor or alter the typeface. Retired gold fleur-de-lis is not used.</dd>
+  </dl>
+  <p style="font-weight:bold;font-size:12px;margin:12px 0 4px">Primary colors</p>
+  <div class="swatches">
+    <div class="sw"><div class="col" style="background:#CE1126"></div><div class="meta"><b>SA Red</b><code>#CE1126</code></div></div>
+    <div class="sw"><div class="col" style="background:#003F87"></div><div class="meta"><b>SA Blue</b><code>#003F87</code></div></div>
+    <div class="sw"><div class="col" style="background:#D6CEBD"></div><div class="meta"><b>SA Tan</b><code>#D6CEBD</code></div></div>
+    <div class="sw"><div class="col" style="background:#515354"></div><div class="meta"><b>SA Gray</b><code>#515354</code></div></div>
+    <div class="sw"><div class="col" style="background:#FFFFFF"></div><div class="meta"><b>SA White</b><code>#FFFFFF</code></div></div>
+  </div>
+  <p style="font-weight:bold;font-size:12px;margin:12px 0 4px">Approved fonts</p>
+  <div><span class="pill">Times New Roman</span><span class="pill">Arial</span><span class="pill">Helvetica Neue LT Std 77 Bold Condensed</span><span class="pill">Proxima Nova Extra Bold</span></div>
+</div>`;
+
+// ---------- render ----------
+const $=s=>document.querySelector(s), rowsEl=$("#rows");
+let sortKey="id",sortAsc=true;
+
+function fillSelect(el,label,vals){el.innerHTML="<option value=''>"+label+"</option>"+vals.map(v=>"<option>"+v+"</option>").join("")}
+fillSelect($("#fSection"),"All sections",[...new Set(PAGES.map(p=>p.section))]);
+fillSelect($("#fOwner"),"All owners",[...new Set(PAGES.map(p=>p.owner))].sort());
+fillSelect($("#fStatus"),"All progress",["Still to do","Complete","No edits"]);
+
+function chips(target){
+  if(!target)return;
+  var withEdits=0,complete=0,remaining=0,tot=0,done=0;
+  PAGES.forEach(function(p){var card=EDITSBYURL[pageFullUrl(p)];if(!card)return;withEdits++;var st=pageStat(card);tot+=st.total;done+=st.done;if(st.done===st.total)complete++;else remaining++;});
+  var h='<div class="chip total"><div class="n">'+withEdits+'</div><div class="l">Pages needing edits</div></div>';
+  h+='<div class="chip"><div class="n">'+remaining+'</div><div class="l">Still to do</div></div>';
+  h+='<div class="chip"><div class="n">'+complete+'</div><div class="l">Complete</div></div>';
+  h+='<div class="chip"><div class="n">'+done+'/'+tot+'</div><div class="l">Edits published</div></div>';
+  target.innerHTML=h;
+}
+
+function filtered(){
+  const q=$("#q").value.toLowerCase(),fs=$("#fSection").value,fo=$("#fOwner").value,fst=$("#fStatus").value;
+  let r=PAGES.filter(p=>(!fs||p.section===fs)&&(!fo||p.owner===fo)&&(!fst||pageCat(p)===fst)&&
+    (!q||(p.page+p.section+p.owner+p.reviewer+p.url+p.id).toLowerCase().includes(q)));
+  const ord={High:0,Medium:1,Low:2};
+  r.sort((a,b)=>{let x=a[sortKey],y=b[sortKey];if(sortKey==="priority"){x=ord[x];y=ord[y]}
+    return (x>y?1:x<y?-1:0)*(sortAsc?1:-1)});
+  return r;
+}
+
+function render(){
+  const r=filtered();
+  rowsEl.innerHTML=r.map(function(p){
+    var opts=STATUSES.map(function(s){return "<option"+(s===p.status?" selected":"")+">"+s+"</option>";}).join("");
+    var ac="ac-"+p.accuracy.replace(/[^A-Za-z]/g,"");
+    var full=pageFullUrl(p), card=EDITSBYURL[full], nEd=card?card.edits.length:0;
+    var nameCell=nEd?("<span class='pgtoggle' data-id='"+p.id+"'><span class='arw'>\u25B8</span> "+p.page+" <span class='edcount'>"+nEd+" edit"+(nEd>1?"s":"")+"</span></span>"):p.page;
+    var tr="<tr data-id='"+p.id+"'"+(nEd?" class='haskids'":"")+">"+
+      "<td class='pid'>"+p.id+"</td>"+
+      "<td>"+p.section+"</td>"+
+      "<td>"+nameCell+"</td>"+
+      "<td class='url'><a href='"+full+"' target='_blank' rel='noopener'>"+p.url+"</a></td>"+
+      "<td><span class='badge "+ac+"'>"+p.accuracy+"</span></td>"+
+      "<td class='p-"+p.priority+"'>"+p.priority+"</td>"+
+      "<td>"+p.owner+"</td>"+
+      "<td class='pstat-cell' data-id='"+p.id+"'>"+pageStatusCell(card)+"</td>"+
+    "</tr>";
+    if(nEd){tr+="<tr class='det' data-for='"+p.id+"' style='display:none'><td colspan='8'><div class='detwrap'>"+pageEditsHTML(card)+"</div></td></tr>";}
+    return tr;
+  }).join("");
+  rowsEl.querySelectorAll(".status").forEach(sel=>sel.onchange=e=>{
+    const p=PAGES.find(x=>x.id===e.target.dataset.id);p.status=e.target.value;
+    e.target.className="status "+stClass(p.status);chips($("#chips"));chips($("#chips2"));});
+  rowsEl.querySelectorAll(".tix").forEach(i=>i.oninput=e=>{PAGES.find(x=>x.id===e.target.dataset.id).ticket=e.target.value});
+  rowsEl.querySelectorAll(".note").forEach(i=>i.oninput=e=>{PAGES.find(x=>x.id===e.target.dataset.id).notes=e.target.value});
+  if($("#fOwner").value){rowsEl.querySelectorAll(".det").forEach(function(d){d.style.display="";});rowsEl.querySelectorAll(".arw").forEach(function(a){a.textContent="\u25BE";});}
+}
+
+document.querySelectorAll("th[data-k]").forEach(th=>th.onclick=()=>{
+  const k=th.dataset.k;if(sortKey===k)sortAsc=!sortAsc;else{sortKey=k;sortAsc=true}
+  document.querySelectorAll("th .arrow").forEach(a=>a.remove());
+  const ar=document.createElement("span");ar.className="arrow";ar.innerHTML=sortAsc?" &#9650;":" &#9660;";th.appendChild(ar);
+  render();
+});
+["#q","#fSection","#fOwner","#fStatus"].forEach(s=>$(s).addEventListener("input",render));
+$("#reset").onclick=()=>{$("#q").value="";$("#fSection").value="";$("#fOwner").value="";$("#fStatus").value="";render()};
+
+// teams
+$("#teamgrid").innerHTML=TEAMS.map(t=>"<div class='tcard "+t[2]+"'><h3>"+t[0]+"</h3><div class='ttype'>"+t[1]+"</div><p>"+t[3]+"</p></div>").join("");
+// rules
+$("#ruleRows").innerHTML=RULES.map(r=>{
+  const tagged=r[3]==="No"?"<span class='tag ok'>OK</span>":"<span class='tag'>"+r[3]+"</span>";
+  return "<tr class='"+(r[4]?"exception":"")+"'><td>"+r[0]+"</td><td>"+r[1]+"</td><td>"+r[2]+"</td><td>"+tagged+"</td></tr>";
+}).join("");
+// brand
+$("#brandgrid").innerHTML=BRAND;
+
+// copy callouts (paste-ready)
+const V="https://www.scouting.org/programs/venturing/";
+const RA=V+"venturing-awards-and-advancement/rank-advancement/";
+const EDITS=[
+ {page:"Venturing \u2014 program home",url:V,edits:[
+  {sec:"Advancement and Awards › Learn how Venturers progress through the program › Paragraph 1",why:"ALPS \u201cP\u201d is Personal Growth (Handbook), not personal development.",
+   cur:"The Venturing Program runs under the A-L-P-S model. We use this model to help Venturers grow in adventure, leadership, personal development, and service. You can learn more about advancement and awards below.",
+   rep:"The Venturing Program runs under the A-L-P-S model. We use this model to help Venturers grow in adventure, leadership, personal growth, and service. You can learn more about advancement and awards below."}]},
+ {page:"Venturing Resources",url:V+"about-venturing/venturing-resources/",edits:[
+  {sec:"Publications › Standard Operating Procedures (SOPs) › Paragraph 1",why:"Org restructure: region/area \u2192 territory (council & district stay).",
+   cur:"The National Venturing SOPs contain the minimum standards of recommendation for VOA operations at the national, region, area, council, and district tiers.",
+   rep:"The National Venturing SOPs contain the minimum standards of recommendation for VOA operations at the national, territory, council, and district tiers."}]},
+ {page:"Venturing Terminology",url:V+"about-venturing/venturing-terminology/",edits:[
+  {sec:"Venturing Terminology › VOA Terminology › Bullet 1",why:"Org restructure: area/region \u2192 territory.",
+   cur:"These definitions will use a Council VOA as examples, but the same structure applies to area, region, and the National VOA.",
+   rep:"These definitions will use a Council VOA as examples, but the same structure applies to territory and the National VOA."}]},
+ {page:"Rank Advancement",url:RA,edits:[{sec:"Rank Advancement › Paragraph 1",why:"ALPS \u201cP\u201d = Personal Growth.",
+   cur:"The first step in any journey is the courage to begin. The Venturing rank advancement program is designed to help Venturers grow in the areas of adventure, leadership, personal development, and service (the ALPS model). Ranks serve as benchmarks that give Venturers a structure for developing their own personal vision into manageable goals that lead to recognition by their peers, mentors, and the larger community.",
+   rep:"The first step in any journey is the courage to begin. The Venturing rank advancement program is designed to help Venturers grow in the areas of adventure, leadership, personal growth, and service (the ALPS model). Ranks serve as benchmarks that give Venturers a structure for developing their own personal vision into manageable goals that lead to recognition by their peers, mentors, and the larger community."},
+  {sec:"Rank Advancement › Bullet 3",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"Finally, Venturers earn the Summit Rank, in which a young person formally serves as a mentor to other Venturers in his or her crew.",rep:"Finally, Venturers earn the Summit Award, in which a young person formally serves as a mentor to other Venturers in his or her crew."},
+  {sec:"Pathfinder Rank › Heading 1",why:"Change: “Summit Rank” → “Summit Award” (heading/title).",cur:"Summit Rank",rep:"Summit Award"},
+  {sec:"Summit Rank › Paragraph 1",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"The highest rank of Venturing, the Summit Rank, goes to those Venturers who have matured in their personal direction, skills, and life competencies, and who have accepted the responsibility to mentor others and serve their communities in a lasting way. LEARN MORE",rep:"The highest rank of Venturing, the Summit Award, goes to those Venturers who have matured in their personal direction, skills, and life competencies, and who have accepted the responsibility to mentor others and serve their communities in a lasting way. LEARN MORE"}]},
+ {page:"Venturing Rank",url:RA+"venturing-award/",edits:[
+  {sec:"Venturing Award › Requirements: › Bullet 14",why:"Handbook req 4 adds the Scout Oath, Scout Law & the Venturing motto.",
+   cur:"State intention to join the crew during a crew induction ceremony (Example).",
+   rep:"State your intention to join the crew by participating in an induction ceremony during which you repeat and commit to live by the Scout Oath and Scout Law and the Venturing motto: Lead the Adventure."},
+  {sec:"Bottom of page — “Buy the Venturing handbook” line",why:"Retired store domain.",
+   cur:"You may purchase the hard-copy Venturing handbook from scoutstuff.org.",
+   rep:"You may purchase the hard-copy Venturing handbook from ScoutShop.org."},
+  {sec:"Page title / SEO title + URL slug (CMS setting — not body text)",why:"Last \u201cAward\u201d straggler (CMS edit, not body text).",
+   note:"Change the page title/SEO title from \u201cVenturing Award\u201d to \u201cVenturing Rank,\u201d and rename the slug /venturing-award/ \u2192 /venturing-rank/ with a 301 redirect (Web/Digital)."}]},
+ {page:"Discovery Rank",url:RA+"discovery-rank/",edits:[
+  {sec:"Requirements: › Adventure › Paragraph 1",why:"Org restructure: area/region \u2192 territory (Handbook); also \u201cTier II or Tier III.\u201d",
+   cur:"Participate in at least two Tier II or III adventures at the crew, district, council, area, regional, or national level.",
+   rep:"Participate in at least two Tier II or Tier III adventures at the crew, district, council, territory, or national level."}]},
+ {page:"Pathfinder Rank",url:RA+"pathfinder-rank/",edits:[
+  {sec:"Requirements: › Adventure › Paragraph 1",why:"area/region \u2192 territory; \u201cTier II or Tier III.\u201d",
+   cur:"Participate in at least two additional (for a total of at least four) Tier II or III adventures at the crew, district, council, area, regional, or national level.",
+   rep:"Participate in at least two additional (for a total of at least four) Tier II or Tier III adventures at the crew, district, council, territory, or national level."},
+  {sec:"Bottom of page — “Buy the Venturing handbook” line",why:"Retired store domain.",
+   cur:"You may purchase the hard-copy Venturing handbook from scoutstuff.org.",
+   rep:"You may purchase the hard-copy Venturing handbook from ScoutShop.org."}]},
+ {page:"Summit Rank",url:RA+"summit-rank/",edits:[{sec:"Summit Rank › Rank Focus: Mentoring › Paragraph 1",why:"Typo: \u201cbe designing\u201d \u2192 \u201cby designing.\u201d",
+   cur:"To achieve this ultimate recognition, you will serve the crew as a leader\u2014both formally and informally\u2014and you will be a mentor to others. In addition, you will strengthen your community be designing and leading a service project to benefit others.",
+   rep:"To achieve this ultimate recognition, you will serve the crew as a leader\u2014both formally and informally\u2014and you will be a mentor to others. In addition, you will strengthen your community by designing and leading a service project to benefit others."},
+  {sec:"Requirements: › Adventure › Paragraph 1",why:"area/region \u2192 territory.",
+   cur:"Participate in at least three additional (for a total of seven) Tier II or Tier III adventures at the crew, district, council, area, regional, or national level.",
+   rep:"Participate in at least three additional (for a total of seven) Tier II or Tier III adventures at the crew, district, council, territory, or national level."},
+  {sec:"Requirements: › Leadership › Paragraph 2",why:"area/region \u2192 territory.",
+   cur:"Since earning the Pathfinder Rank, mentor another Venturer in the planning and implementation of a crew, council, area, regional, or national Venturing activity (see Summit Adventure requirement 1).",
+   rep:"Since earning the Pathfinder Rank, mentor another Venturer in the planning and implementation of a crew, council, territory, or national Venturing activity (see Summit Adventure requirement 1)."},
+  {sec:"Requirements: › Leadership › Paragraph 4",why:"area/region \u2192 territory.",
+   cur:"Venturers may substitute district, council, area, regional, or national Venturing officer or cabinet positions for the positions listed in this requirement.",
+   rep:"Venturers may substitute district, council, territory, or national Venturing officer or cabinet positions for the positions listed in this requirement."},
+  {sec:"Bottom of page — “Buy the Venturing handbook” line",why:"Retired store domain.",
+   cur:"You may purchase the hard-copy Venturing handbook from scoutstuff.org.",
+   rep:"You may purchase the hard-copy Venturing handbook from ScoutShop.org."},
+  {sec:"Page title / SEO title + URL slug (CMS)",why:"Rename the page Summit Rank → Summit Award: update the SEO / browser title and the URL slug summit-rank → summit-award, and add a 301 redirect from the old URL so existing links keep working. The breadcrumb trail updates automatically.",note:"summit-rank → summit-award (title + slug; add redirect)"},
+  {sec:"Heading 1",why:"Change: “Summit Rank” → “Summit Award” (heading/title).",cur:"Summit Rank",rep:"Summit Award"},
+  {sec:"Rank Focus: Mentoring › Paragraph 1",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"The Summit Rank represents Venturing’s highest honor. To achieve this ultimate recognition, you will serve the crew as a leader— both formally and informally— and you will be a mentor to others. In addition, you will strengthen your community be designing and leading a service project to benefit others. The experience gained in earning this rank will help you mature as a member of a team and as an individual.",rep:"The Summit Award represents Venturing’s highest honor. To achieve this ultimate recognition, you will serve the crew as a leader— both formally and informally— and you will be a mentor to others. In addition, you will strengthen your community be designing and leading a service project to benefit others. The experience gained in earning this rank will help you mature as a member of a team and as an individual."},
+  {sec:"Adventure › Paragraph 1",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"1. Participate in at least three additional (for a total of seven) Tier II or Tier III adventures at the crew, district, council, area, regional, or national level. To earn the Summit Rank, a Venturer must have participated in at least one Tier III adventure and served as a leader during one adventure.",rep:"1. Participate in at least three additional (for a total of seven) Tier II or Tier III adventures at the crew, district, council, territory, or national level. To earn the Summit Award, a Venturer must have participated in at least one Tier III adventure and served as a leader during one adventure."},
+  {sec:"Leadership › Bullet 2",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"Participate in or serve on staff for leadership training such as National Youth Leadership Training, National Advanced Youth Leadership Experience, Order of the Arrow National Leadership Seminar, Sea Scout SEAL Training, or Wood Badge (for Venturers 18 or older). You may also participate in non-Scouting America leadership training courses such as those delivered by the National Outdoor Leadership School, if approved by your Advisor. This must be a different training course than you completed for Pathfinder Rank requirement 4b or Summit Rank requirement 4c.",rep:"Participate in or serve on staff for leadership training such as National Youth Leadership Training, National Advanced Youth Leadership Experience, Order of the Arrow National Leadership Seminar, Sea Scout SEAL Training, or Wood Badge (for Venturers 18 or older). You may also participate in non-Scouting America leadership training courses such as those delivered by the National Outdoor Leadership School, if approved by your Advisor. This must be a different training course than you completed for Pathfinder Rank requirement 4b or Summit Award requirement 4c."},
+  {sec:"Council Submission › Bullet 1",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award” (2 places).",cur:"In order for a Venturer’s Summit Rank application to be fully processed, the local council must email a copy of the fully completed Summit Rank Application to advancement.team@scouting.org",rep:"In order for a Venturer’s Summit Award application to be fully processed, the local council must email a copy of the fully completed Summit Award Application to advancement.team@scouting.org"}]},
+ {page:"Leadership Awards",url:V+"venturing-awards-and-advancement/leadership/",edits:[
+  {sec:"Leadership Awards › Venturing Leadership Award (VLA) › Paragraph 1",why:"area/region \u2192 territory.",
+   cur:"The Venturing Leadership Award is presented by councils, areas, regions, and the Scouting America National Council to Venturers and Venturing Advisors who have made exceptional contributions to Venturing and who exemplify the Scout Oath and Scout Law.",
+   rep:"The Venturing Leadership Award is presented by councils, territories, and the Scouting America National Council to Venturers and Venturing Advisors who have made exceptional contributions to Venturing and who exemplify the Scout Oath and Scout Law."}]},
+ {page:"VOA (landing)",url:V+"voa/",edits:[
+  {sec:"Throughout the page — the heading and intro (every instance on the page)",why:"Apostrophe inconsistency; correct form has no apostrophe.",
+   note:"The page uses both \u201cVenturing Officer\u2019s Association\u201d and \u201cVenturing Officers\u2019 Association.\u201d Standardize every instance to \u201cVenturing Officers Association\u201d (no apostrophe), matching the dedicated VOA page and the Handbook."},
+  {sec:"VOA › VOA Insignia › Paragraph 1",why:"area/region \u2192 territory.",
+   cur:"Area, regional, and national patches are to be worn with gold shoulder loops.",
+   rep:"Territory and national patches are to be worn with gold shoulder loops."},
+  {sec:"VOA › Meet Your Officers › Paragraph 1",why:"Regions replaced by territories: now 14 Territory Support Presidents.",
+   cur:"The National Venturing Officers\u2019 Association (NVOA) consists of our National Venturing President, National Venturing Vice President, four Regional Venturing Presidents, and their respective advisors.",
+   rep:"The National Venturing Officers Association (NVOA) consists of our National Venturing President, National Venturing Vice President, 14 Territory Support Presidents, 14 Territory Support Vice Presidents, and their respective advisors."},
+  {sec:"VOA › Meet Your Advisors › Paragraph 1",why:"Same fix where the shorthand \u201cVOA\u201d is used.",
+   cur:"The National Venturing Officers\u2019 Association (NVOA) consists of our National VOA President, National VOA Vice President, four Regional VOA Presidents, and their respective advisors.",
+   rep:"The National Venturing Officers Association (NVOA) consists of our National VOA President, National VOA Vice President, 14 Territory Support Presidents, 14 Territory Support Vice Presidents, and their respective advisors."}]},
+ {page:"Apply to be a VOA Officer",url:V+"voa/apply-to-be-a-voa-officer/",edits:[
+  {sec:"Apply to be a VOA Officer › Position Descriptions › Bullet 21 (“…e.g., Council or Region newsletter and websites”)",why:"area/region \u2192 territory.",
+   note:"In the example list of where to promote openings \u2014 \u201c(\u2026 Council or Region newsletter and websites)\u201d \u2014 change \u201cRegion\u201d to \u201cTerritory.\u201d"}]},
+ {page:"Uniform Guide",url:V+"about-venturing/uniform-guide/",edits:[{sec:"Uniform Guide › Bullet 1",why:"area/region \u2192 territory.",
+   cur:"(or the appropriate patch to show your membership in a council, area, regional, or national VOA)",
+   rep:"(or the appropriate patch to show your membership in a council, territory, or national VOA)"},
+  {sec:"Uniform Guide › Paragraph 10",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award” (3 places).",cur:"The Venturing Rank patches are to be worn on the left pocket in the same fashion that Scouts BSA wears their rank patches. Only one Venturing rank patch is to be worn at a time. Venturers can still wear previous Venturing award recognition devices if they have earned them. When a Venturer earns the Summit Rank, they should wear the Summit Rank pocket patch, not the square knot. The square knot is to be worn instead of the patch when the Venturer reaches the age of 21. However, a Venturer can wear the square knot as a youth if it represents the Venturing Silver Award (the square knot for the Summit Rank is the same as the Venturing Silver Award).",rep:"The Venturing Rank patches are to be worn on the left pocket in the same fashion that Scouts BSA wears their rank patches. Only one Venturing rank patch is to be worn at a time. Venturers can still wear previous Venturing award recognition devices if they have earned them. When a Venturer earns the Summit Award, they should wear the Summit Award pocket patch, not the square knot. The square knot is to be worn instead of the patch when the Venturer reaches the age of 21. However, a Venturer can wear the square knot as a youth if it represents the Venturing Silver Award (the square knot for the Summit Award is the same as the Venturing Silver Award)."}]},
+ {page:"Annual Program Planning",url:V+"crew-resources/annual-program-planning/",edits:[
+  {sec:"Annual Program Planning › Resources › Bullet 14",why:"Only standalone \u201cBSA\u201d on the site \u2014 update to the new name (exact phrasing is your call).",
+   cur:"Just a few of many non-BSA options.",
+   rep:"Just a few of many non-Scouting America options."}]},
+ {page:"Start a Crew",url:V+"crew-resources/start-a-crew/",edits:[
+  {sec:"Start a Crew › Step 1- Get Your Minimums › Bullet 5",why:"Rebrand: Youth Protection → Safeguarding Youth.",
+   cur:"All adults, as well as youth over 18, must complete Youth Protection Training.",
+   rep:"All adults, as well as youth over 18, must complete Safeguarding Youth Training."}]},
+ {page:"Training (landing)",url:V+"training/",edits:[
+  {sec:"Training › Adult Training › Paragraph 1",why:"Rebrand: Youth Protection → Safeguarding Youth.",
+   cur:"All adults involved in Venturing are required to take Youth Protection Training;",
+   rep:"All adults involved in Venturing are required to take Safeguarding Youth Training;"}]},
+ {page:"Adult Trainings",url:V+"training/adult-trainings/",edits:[
+  {sec:"Adult Trainings › Section heading (“Youth Protection Training”)",why:"Rebrand: Youth Protection → Safeguarding Youth.",
+   cur:"Youth Protection Training",
+   rep:"Safeguarding Youth Training"},
+  {sec:"Adult Trainings › Youth Protection Training › Paragraph 1",why:"Rebrand: Youth Protection → Safeguarding Youth; also area/region → territory.",
+   cur:"It is the mission of Youth Protection volunteers and professionals to work within Scouting America to maintain a culture of Youth Protection awareness and safety at the national, regional, area, council, district, and unit levels.",
+   rep:"It is the mission of Safeguarding Youth volunteers and professionals to work within Scouting America to maintain a culture of Safeguarding Youth awareness and safety at the national, territory, council, district, and unit levels."}]},
+ {page:"Connect (landing)",url:V+"connect/",edits:[
+  {sec:"Connect › Events › Paragraph 1",why:"area/region \u2192 territory.",
+   cur:"organized by VOAs or by individual councils, areas, regions, or the National Service Center",
+   rep:"organized by VOAs or by individual councils, territories, or the National Service Center"},
+  {sec:"Connect › Social Media › Paragraph 1",why:"area/region \u2192 territory.",
+   cur:"Many of our council, area, and region VOAs maintain their own social media pages",
+   rep:"Many of our council and territory VOAs maintain their own social media pages"}]},
+ {page:"Connect \u2014 Social Media",url:V+"connect/social-media/",edits:[
+  {sec:"Whole page — organized by the four former Regions (comms review needed; do not auto-edit)",why:"Regions replaced by territories; external accounts need comms confirmation.",
+   note:"This page is built around the four former Regions (Northeast, Central, Southern, Western) and lists region-level Venturing social accounts, plus the national handle @VenturingBSA. With regions now territories, the communications team should confirm which accounts still exist (and the current national handle), then reorganize this page by territory. These are live external accounts \u2014 do not change handles or links without verifying them first."}]},
+ {page:"SOPs",url:V+"voa/sops/",edits:[
+  {sec:"SOPs › Paragraph 4",why:"area/region \u2192 territory.",
+   cur:"Please utilize the youth leadership on an area and region level to assist in the organization of VOAs.",
+   rep:"Please utilize the youth leadership on a territory level to assist in the organization of VOAs."}]},
+ {page:"VOA Insignia",url:V+"voa/voa-insignia/",edits:[
+  {sec:"VOA Insignia › Paragraph 2",why:"Region presidents \u2192 Territory Support Presidents.",
+   cur:"(National Venturing President, National Venturing VP, Region Venturing Presidents) must attend a mandatory orientation",
+   rep:"(National Venturing President, National Venturing VP, Territory Support Presidents) must attend a mandatory orientation"},
+  {sec:"VOA Insignia › Deadlines › Paragraph 1",why:"area/region \u2192 territory.",
+   cur:"Applications for national, regional, and area level positions must be submitted by email",
+   rep:"Applications for national and territory level positions must be submitted by email"},
+  {sec:"VOA Insignia › Position Descriptions › Bullet 21",why:"area/region \u2192 territory.",
+   cur:"other Scouting media (e.g., Council or Region newsletter and websites)",
+   rep:"other Scouting media (e.g., Council or Territory newsletter and websites)"}]},
+ {page:"Venturing Awards FAQ",url:V+"venturing-awards-and-advancement/venturing-awards-faq/",edits:[{sec:"Venturing Ranks: › Bullet 6",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"The capstone service project designed and led by Summit Rank candidates must be a different service project than one carried out for the Eagle Scout Award, the Sea Scout Quartermaster Award, or the Girl Scout Gold Award.",rep:"The capstone service project designed and led by Summit Award candidates must be a different service project than one carried out for the Eagle Scout Award, the Sea Scout Quartermaster Award, or the Girl Scout Gold Award."}]},
+ {page:"Scholarships",url:V+"crew-resources/scholarships/",edits:[{sec:"Scholarships › Paragraph 1",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award” (3 places).",cur:"Dozens of universities, Scouting America local councils, and religious, civic, and military organizations offer college scholarships to Venturing Summit Rank recipients. Some scholarships are needs-based; others are merit-based. Some go to every Summit Rank recipient who applies; others are highly competitive. We have compiled a list of scholarships available to Summit Rank recipients and will update our list, as necessary. If you find any errors or are aware of other scholarships, please contact venturing@scouting.org.",rep:"Dozens of universities, Scouting America local councils, and religious, civic, and military organizations offer college scholarships to Venturing Summit Award recipients. Some scholarships are needs-based; others are merit-based. Some go to every Summit Award recipient who applies; others are highly competitive. We have compiled a list of scholarships available to Summit Award recipients and will update our list, as necessary. If you find any errors or are aware of other scholarships, please contact venturing@scouting.org."},
+  {sec:"Community › Bullet 3",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"VFW Scout of the Year ScholarshipThe VFW Scout of the Year Scholarship program provides a $5,000 award to an outstanding scout who is the recipient of the Scouts BSA Eagle Award, Venturing Summit Rank/Silver Award, or Sea Scout Quartermaster Award. For more information, click here! Deadline: March 1",rep:"VFW Scout of the Year ScholarshipThe VFW Scout of the Year Scholarship program provides a $5,000 award to an outstanding scout who is the recipient of the Scouts BSA Eagle Award, Venturing Summit Award/Silver Award, or Sea Scout Quartermaster Award. For more information, click here! Deadline: March 1"},
+  {sec:"Religious › Paragraph 1",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"Emmett J. Doerr Memorial Distinguished Scout ScholarshipEach year, the National Catholic Committee on Scouting awards $2,000 scholarships to five outstanding Catholic young men or women who are high school seniors and currently registered and active in Boy Scouting, Varsity Scouting, or Venturing. The applicant must have earned the Eagle Scout Award or the Summit Rank; have earned the Ad Altare Dei or Pope Pius XII religious emblem; have held a Scouting leadership position; and have served in his or her home parish. For more information, click here!",rep:"Emmett J. Doerr Memorial Distinguished Scout ScholarshipEach year, the National Catholic Committee on Scouting awards $2,000 scholarships to five outstanding Catholic young men or women who are high school seniors and currently registered and active in Boy Scouting, Varsity Scouting, or Venturing. The applicant must have earned the Eagle Scout Award or the Summit Award; have earned the Ad Altare Dei or Pope Pius XII religious emblem; have held a Scouting leadership position; and have served in his or her home parish. For more information, click here!"},
+  {sec:"Institution Specific › Bullet 2",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"Faulkner University Scouting Leadership AwardFaulkner provides scholarships for Eagle Scouts, Venturing Summit Rank recipients, Sea Scouting Quartermaster Award recipients and more. For more information, click here!",rep:"Faulkner University Scouting Leadership AwardFaulkner provides scholarships for Eagle Scouts, Venturing Summit Award recipients, Sea Scouting Quartermaster Award recipients and more. For more information, click here!"},
+  {sec:"Institution Specific › Bullet 3",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"Harding University Scouting ScholarshipAwarded to selected full-time students who have earned the rank of Eagle (Scouts BSA), Summit Rank (Venturing), Quartermaster Award (Sea Scouts) and more. Interested students should inquire with the Assistant VP for Enrollment Management.",rep:"Harding University Scouting ScholarshipAwarded to selected full-time students who have earned the rank of Eagle (Scouts BSA), Summit Award (Venturing), Quartermaster Award (Sea Scouts) and more. Interested students should inquire with the Assistant VP for Enrollment Management."},
+  {sec:"Institution Specific › Bullet 5",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"Lipscomb University ScholarshipLipscomb University in Nashville, TN has a $10,000 scholarship for incoming freshmen who have received the Eagle Scout Award, Venturing Summit Rank/Silver Award, Sea Scouting Quartermaster Award and more. For more information, click here!",rep:"Lipscomb University ScholarshipLipscomb University in Nashville, TN has a $10,000 scholarship for incoming freshmen who have received the Eagle Scout Award, Venturing Summit Award/Silver Award, Sea Scouting Quartermaster Award and more. For more information, click here!"},
+  {sec:"Institution Specific › Bullet 6",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"Oklahoma Christian University Scouting AwardThis annually renewable award is available to incoming freshmen who have received the Eagle Scout Award, Venturing Summit Rank, Sea Scouting Quartermaster Award and more. Proof of the award is required. Inquire with Oklahoma Christian Admissions regarding the scholarship details.",rep:"Oklahoma Christian University Scouting AwardThis annually renewable award is available to incoming freshmen who have received the Eagle Scout Award, Venturing Summit Award, Sea Scouting Quartermaster Award and more. Proof of the award is required. Inquire with Oklahoma Christian Admissions regarding the scholarship details."},
+  {sec:"Institution Specific › Bullet 7",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"University of Evansville Scouting ScholarshipThe University of Evansville has teamed up with America’s Scouting organizations to create the UE Scouting Scholarship – stacking on top of an admitted student’s substantial academic scholarship, this $2,000, four-year award is reserved for recipients of the Eagle Scout Award, Quartermaster Award, or the Summit Rank/Silver Award. For more information, click here!",rep:"University of Evansville Scouting ScholarshipThe University of Evansville has teamed up with America’s Scouting organizations to create the UE Scouting Scholarship – stacking on top of an admitted student’s substantial academic scholarship, this $2,000, four-year award is reserved for recipients of the Eagle Scout Award, Quartermaster Award, or the Summit Award/Silver Award. For more information, click here!"},
+  {sec:"Institution Specific › Bullet 8",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"Waynesburg University Scouting ScholarshipEagle Scout, Venturing Summit Rank recipients and more can receive up to $2,000 over the course of four years ($500/year) for their accomplishment within Scouting. Students must be accepted to Waynesburg University in order to qualify. For more information, click here!",rep:"Waynesburg University Scouting ScholarshipEagle Scout, Venturing Summit Award recipients and more can receive up to $2,000 over the course of four years ($500/year) for their accomplishment within Scouting. Students must be accepted to Waynesburg University in order to qualify. For more information, click here!"}]},
+ {page:"Connect — Latest Updates",url:V+"connect/latest-updates/",edits:[{sec:"Venturing Newsletter | Winter 2023 › Paragraph 2",why:"Replace the whole paragraph with the corrected version on the right. Change: “Summit Rank” → “Summit Award”.",cur:"In this issue of the Venturing Newsletter, discover the history of the Summit Rank, meet the National VOA, get tips for landing an internship, and more!",rep:"In this issue of the Venturing Newsletter, discover the history of the Summit Award, meet the National VOA, get tips for landing an internship, and more!"}]},
+ {page:"ALPS Youth Training",url:V+"training/alps-youth-training/",edits:[{sec:"Pathfinder Rank Trainings › Heading 1",why:"Change: “Summit Rank” → “Summit Award” (heading/title).",cur:"Summit Rank Trainings",rep:"Summit Award Trainings"}]},
+ {page:"Language of Scouting (resources/los)",url:"https://www.scouting.org/resources/los/",edits:[{sec:"Glossary entry: Venturing Award",why:"Update the whole glossary entry to the corrected version on the right.",cur:"The first-level Venturing award.",rep:"Venturing Rank (also Venturing Award) — the first level of the Venturing recognition system."},
+  {sec:"Glossary entry: Discovery Award",why:"Update the whole glossary entry to the corrected version on the right.",cur:"Second-level Venturing award.",rep:"Discovery Rank (also Discovery Award) — the second level of the Venturing recognition system."},
+  {sec:"Glossary entry: Pathfinder Award",why:"Update the whole glossary entry to the corrected version on the right.",cur:"Third-level Venturing award.",rep:"Pathfinder Rank (also Pathfinder Award) — the third level of the Venturing recognition system."},
+  {sec:"Glossary entry: Summit Award",why:"Update the whole glossary entry to the corrected version on the right.",cur:"The top-level award in Venturing.",rep:"Summit Award (also Summit Rank) — the top level of the Venturing recognition system and Venturing’s highest honor. Replaced the former Venturing Silver Award as the program’s top recognition."},
+  {sec:"Glossary entry: rank",why:"Add the Venturing ranks to this entry (they are currently omitted). Whole entry shown.",cur:"The seven Cub Scout ranks are Lion, Bobcat, Tiger, Wolf, Bear, Webelos, and Arrow of Light. There are seven ranks for Scouts: Scout, Tenderfoot, Second Class, First Class, Star, Life, and Eagle Scout. The Sea Scouting ranks are Apprentice, Ordinary, Able, and Quartermaster. Examples: “First Class rank,” “Star Scout.”",rep:"The seven Cub Scout ranks are Lion, Bobcat, Tiger, Wolf, Bear, Webelos, and Arrow of Light. There are seven ranks for Scouts: Scout, Tenderfoot, Second Class, First Class, Star, Life, and Eagle Scout. The Sea Scouting ranks are Apprentice, Ordinary, Able, and Quartermaster. Examples: “First Class rank,” “Star Scout.” The Venturing ranks are Venturing, Discovery, Pathfinder, and Summit (also referred to as awards)."},
+  {sec:"Glossary entry: Venturing officers’ association (VOA)",why:"Name change only.",note:"Update the name to drop the apostrophe: “Venturing Officers Association (VOA).” Leave the area / regional / national level wording as-is here (region is still used across Scouting)."},
+  {sec:"Do NOT change (still correct)",why:"Reference — no action.",note:"“Scoutbook” (capital S, lowercase b) is correct — do not camelCase. region / area as general structure is still used. Silver Antelope / Silver Beaver / Silver Buffalo are adult Scouter awards, unrelated to Venturing. “Scouts BSA” is retained."},
+  {sec:"Org-wide rebrand (flag)",why:"Beyond Venturing — for whoever maintains LOS.",note:"“Boy Scouts of America” entries reflect the pre-rebrand legal name; the organization is now “Scouting America” (no acronym). “Scouts BSA” is retained."}]}
+];
+
+function copyText(str,btn){
+  const done=()=>{const o=btn.textContent;btn.textContent="Copied";btn.classList.add("done");setTimeout(()=>{btn.textContent=o;btn.classList.remove("done")},1200)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(str).then(done).catch(()=>fallback(str,done))}
+  else fallback(str,done);
+}
+function fallback(str,done){const t=document.createElement("textarea");t.value=str;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();try{document.execCommand("copy")}catch(e){}document.body.removeChild(t);done()}
+
+function _tok(s){return (s||'').match(/\s+|[^\s]+/g)||[];}
+function _esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function diffHL(a,b){
+ var A=_tok(a),B=_tok(b),n=A.length,m=B.length,i,j;
+ var dp=[];for(i=0;i<=n;i++){dp.push(new Array(m+1).fill(0));}
+ for(i=n-1;i>=0;i--)for(j=m-1;j>=0;j--){dp[i][j]=A[i]===B[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);}
+ i=0;j=0;var oldH='',newH='',chips=[],cd='',ci='';
+ function flush(){var d=cd.trim(),nn=ci.trim();if(d||nn){chips.push([d,nn]);}cd='';ci='';}
+ while(i<n&&j<m){
+  if(A[i]===B[j]){flush();oldH+=_esc(A[i]);newH+=_esc(B[j]);i++;j++;}
+  else if(dp[i+1][j]>=dp[i][j+1]){oldH+="<span class='dx'>"+_esc(A[i])+"</span>";cd+=A[i];i++;}
+  else{newH+="<span class='dn'>"+_esc(B[j])+"</span>";ci+=B[j];j++;}
+ }
+ while(i<n){oldH+="<span class='dx'>"+_esc(A[i])+"</span>";cd+=A[i];i++;}
+ while(j<m){newH+="<span class='dn'>"+_esc(B[j])+"</span>";ci+=B[j];j++;}
+ flush();
+ var mp=new Map();chips.forEach(function(p){var k=(p[0]||'(removed)')+" \u2192 "+(p[1]||'(removed)');mp.set(k,(mp.get(k)||0)+1);});
+ var chipHtml=[...mp.entries()].map(function(e){return "<span class='chip'>"+_esc(e[0])+(e[1]>1?" ("+e[1]+"\u00d7)":"")+"</span>";}).join("");
+ return {oldH:oldH,newH:newH,chipHtml:chipHtml};
+}
+// ---- per-correction tracking ----
+const TRK_KEY="venturing_tracker_v1";
+let TRK={};
+try{TRK=JSON.parse(localStorage.getItem(TRK_KEY)||"{}")||{};}catch(e){TRK={};}
+const TRK_STATUSES=["In review","Approved","In progress","Published"];
+function stCls(s){return s==="Approved"?"s-app":s==="In progress"?"s-prog":s==="Published"?"s-pub":"s-rev";}
+function trackId(page,sec){let h=0,str=page+"||"+sec;for(let k=0;k<str.length;k++){h=(h*31+str.charCodeAt(k))>>>0;}return "t"+h.toString(36);}
+function escAttr(s){return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");}
+function trackRow(id){var t=TRK[id]||{};var st=t.status||"In review";
+ return "<div class='trk' data-id='"+id+"'><span class='trk-badge "+stCls(st)+"'>"+st+"</span>"+
+  "<label class='trk-l'>Status <select class='trk-status'>"+TRK_STATUSES.map(function(o){return "<option"+(o===st?" selected":"")+">"+o+"</option>";}).join("")+"</select></label>"+
+  "<input class='trk-comment' placeholder='Comment / approver\u2026' value=\""+escAttr(t.comment)+"\"></div>";}
+function flashSaved(m){var el=$("#trkSaved");if(!el)return;el.textContent="\u2713 "+m;el.style.opacity="1";clearTimeout(window.__sv);window.__sv=setTimeout(function(){el.style.opacity=".5";},1600);}
+const CLOUD_URL="https://jsonblob.com/api/jsonBlob/019e9467-542a-7bbd-801f-9f1370f0fd9b";
+let DIRTY=new Set(),__pushT=null,__pushing=false;
+function setSync(t,cls){var el=$("#trkSync");if(el){el.textContent=t;el.className="trk-saved "+(cls||"");}}
+function schedulePush(){clearTimeout(__pushT);setSync("Saving\u2026");__pushT=setTimeout(cloudPush,700);}
+async function cloudPush(){
+ if(__pushing){schedulePush();return;} __pushing=true;
+ try{
+  var r=await fetch(CLOUD_URL,{headers:{"Accept":"application/json"}});
+  var remote=r.ok?await r.json():{}; if(typeof remote!=="object"||!remote)remote={};
+  DIRTY.forEach(function(id){remote[id]=TRK[id];});
+  var p=await fetch(CLOUD_URL,{method:"PUT",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(remote)});
+  if(!p.ok)throw new Error("PUT "+p.status);
+  TRK=remote; DIRTY.clear(); try{localStorage.setItem(TRK_KEY,JSON.stringify(TRK));}catch(e){}
+  setSync("\u2713 Synced "+new Date().toLocaleTimeString(),"ok");
+ }catch(e){ setSync("Offline \u2014 saved on this device","warn"); setTimeout(function(){if(DIRTY.size)schedulePush();},8000); }
+ __pushing=false;
+}
+async function cloudPull(){
+ try{
+  var r=await fetch(CLOUD_URL,{headers:{"Accept":"application/json"}}); if(!r.ok)return;
+  var remote=await r.json(); if(typeof remote!=="object"||!remote)return;
+  var active=document.activeElement;
+  Object.keys(remote).forEach(function(id){
+   if(id==="_meta"||DIRTY.has(id))return;
+   TRK[id]=remote[id];
+   var row=document.querySelector(".trk[data-id='"+id+"']");
+   if(row){var sel=row.querySelector(".trk-status"),com=row.querySelector(".trk-comment"),bdg=row.querySelector(".trk-badge");
+    var st=(TRK[id]&&TRK[id].status)||"In review";
+    if(sel&&sel!==active)sel.value=st;
+    if(bdg){bdg.textContent=st;bdg.className="trk-badge "+stCls(st);}
+    if(com&&com!==active)com.value=(TRK[id]&&TRK[id].comment)||"";}
+  });
+  try{localStorage.setItem(TRK_KEY,JSON.stringify(TRK));}catch(e){}
+  updateTrkSummary();refreshAllPageStats();
+  if(!DIRTY.size)setSync("\u2713 Synced "+new Date().toLocaleTimeString(),"ok");
+ }catch(e){ setSync("Offline \u2014 saved on this device","warn"); }
+}
+function saveTRK(){try{localStorage.setItem(TRK_KEY,JSON.stringify(TRK));}catch(e){} schedulePush();}
+function updateTrkSummary(){var c={"In review":0,"Approved":0,"In progress":0,"Published":0},tot=0;
+ EDITS.forEach(function(pg){pg.edits.forEach(function(e){var id=trackId(pg.page,e.sec);var st=(TRK[id]&&TRK[id].status)||"In review";c[st]++;tot++;});});
+ var el=$("#trkSum");if(el)el.innerHTML="<b>"+tot+" items:</b> "+TRK_STATUSES.map(function(s){return "<span class='trk-badge "+stCls(s)+"'>"+c[s]+" "+s+"</span>";}).join(" ");}
+
+const ORIGIN="https://www.scouting.org";
+const EDITSBYURL={}; EDITS.forEach(function(c){EDITSBYURL[c.url]=c;});
+function pageFullUrl(p){return (p.url&&p.url.indexOf("http")===0)?p.url:ORIGIN+(p.url||"");}
+function pageStat(card){var t=card?card.edits.length:0,d=0;if(card)card.edits.forEach(function(e){var id=trackId(card.page,e.sec);var st=(TRK[id]&&TRK[id].status)||"In review";if(st==="Published")d++;});return {total:t,done:d};}
+function pageStatusCell(card){var s=pageStat(card);if(s.total===0)return "<span class='pstat p-none'>no edits</span>";if(s.done===s.total)return "<span class='pstat p-done'>\u2713 all "+s.total+" published</span>";var cls=s.done>0?"p-prog":"p-todo";return "<span class='pstat "+cls+"'>"+s.done+" / "+s.total+" published</span>";}
+function pageCat(p){var card=EDITSBYURL[pageFullUrl(p)];if(!card)return "No edits";var s=pageStat(card);return s.done===s.total?"Complete":"Still to do";}
+function refreshPageStat(pid){var p=PAGES.find(function(x){return x.id===pid;});if(!p)return;var card=EDITSBYURL[pageFullUrl(p)];var cell=document.querySelector("td.pstat-cell[data-id='"+pid+"']");if(cell)cell.innerHTML=pageStatusCell(card);}
+function refreshAllPageStats(){PAGES.forEach(function(p){refreshPageStat(p.id);});if($("#chips"))chips($("#chips"));if($("#chips2"))chips($("#chips2"));}
+function pageEditsHTML(card){ if(!card)return "";
+ return card.edits.map(function(e,j){
+   var id=trackId(card.page,e.sec);
+   var why=e.why?"<div class='ed-why'>"+e.why+"</div>":"";
+   if(e.note&&!e.cur){return "<div class='ed'><div class='ed-sec'>"+e.sec+"</div>"+why+"<div class='ed-note'>"+e.note+"</div>"+trackRow(id)+"</div>";}
+   var note=e.note?"<div class='ed-note'>"+e.note+"</div>":"";
+   var d=diffHL(e.cur,e.rep);
+   var cu=escAttr(card.url);
+   return "<div class='ed'><div class='ed-sec'>"+e.sec+"</div>"+why+
+     "<div class='ba'><div class='ba-find'><div class='ba-h'>Find this (current paragraph) <button class='copybtn' data-cu=\""+cu+"\" data-j='"+j+"' data-fld='cur'>Copy</button></div>"+d.oldH+"</div>"+
+     "<div class='ba-rep'><div class='ba-h'>Replace with (corrected paragraph) <button class='copybtn' data-cu=\""+cu+"\" data-j='"+j+"' data-fld='rep'>Copy</button></div>"+d.newH+"</div></div>"+note+trackRow(id)+"</div>";
+ }).join("");
+}
+function renderEdits(){
+ $("#calloutList").innerHTML=
+ "<div class='pgindex'>Jump to a page: "+EDITS.map((pg,i)=>"<a href='#pg"+i+"'>"+pg.page+" ("+pg.edits.length+")</a>").join(" &middot; ")+"</div>"+
+ EDITS.map((pg,i)=>{
+  const items=pg.edits.map((e,j)=>{
+    const id=trackId(pg.page,e.sec);
+    const why=e.why?"<div class='ed-why'>"+e.why+"</div>":"";
+    if(e.note&&!e.cur){return "<div class='ed'><div class='ed-sec'>"+e.sec+"</div>"+why+"<div class='ed-note'>"+e.note+"</div>"+trackRow(id)+"</div>";}
+    const note=e.note?"<div class='ed-note'>"+e.note+"</div>":"";
+    const d=diffHL(e.cur,e.rep);
+    const chg=d.chipHtml?"<div class='ed-chg'><b>What changes:</b> "+d.chipHtml+"</div>":"";
+    return "<div class='ed'><div class='ed-sec'>"+e.sec+"</div>"+why+chg+
+      "<div class='ba'><div class='ba-find'><div class='ba-h'>Find this (current paragraph)</div>"+d.oldH+"</div>"+
+      "<div class='ba-rep'><div class='ba-h'>Replace with (corrected paragraph) <button class='copybtn' data-i='"+i+"' data-j='"+j+"'>Copy</button></div>"+d.newH+"</div></div>"+note+trackRow(id)+"</div>";
+  }).join("");
+  return "<div class='pgcard' id='pg"+i+"'><div class='pgcard-h'><span class='pgcard-t'>"+pg.page+"</span><span class='pgcard-n'>"+pg.edits.length+" edit"+(pg.edits.length>1?"s":"")+"</span><a class='loc-link' href='"+pg.url+"' target='_blank' rel='noopener'>open page &#8599;</a></div>"+items+"</div>";
+ }).join("");
+ $("#calloutList").querySelectorAll(".copybtn").forEach(b=>b.onclick=()=>copyText(EDITS[+b.dataset.i].edits[+b.dataset.j].rep,b));
+ updateTrkSummary();
+}
+updateTrkSummary();
+rowsEl.addEventListener("click",function(e){
+ var tg=e.target.closest&&e.target.closest(".pgtoggle");
+ if(tg){var id=tg.dataset.id;var det=rowsEl.querySelector(".det[data-for='"+id+"']");if(det){var show=det.style.display==="none";det.style.display=show?"":"none";var a=tg.querySelector(".arw");if(a)a.textContent=show?"\u25BE":"\u25B8";}return;}
+ var cb=e.target.closest&&e.target.closest(".copybtn");
+ if(cb){var c=EDITSBYURL[cb.dataset.cu];if(c)copyText(c.edits[+cb.dataset.j][cb.dataset.fld||"rep"],cb);return;}
+});
+rowsEl.addEventListener("change",function(e){var trk=e.target.closest&&e.target.closest(".trk");if(!trk)return;var id=trk.dataset.id;TRK[id]=TRK[id]||{};if(e.target.classList.contains("trk-status")){TRK[id].status=e.target.value;var b=trk.querySelector(".trk-badge");b.textContent=e.target.value;b.className="trk-badge "+stCls(e.target.value);DIRTY.add(id);saveTRK();updateTrkSummary();refreshAllPageStats();}});
+rowsEl.addEventListener("input",function(e){var trk=e.target.closest&&e.target.closest(".trk");if(!trk)return;if(e.target.classList.contains("trk-comment")){var id=trk.dataset.id;TRK[id]=TRK[id]||{};TRK[id].comment=e.target.value;DIRTY.add(id);saveTRK();}});
+(function(){var rf=$("#trkRefresh");if(rf)rf.onclick=cloudPull; cloudPull(); setInterval(function(){if(!DIRTY.size)cloudPull();},15000); if(document.addEventListener){document.addEventListener("visibilitychange",function(){if(!document.hidden&&!DIRTY.size)cloudPull();});}})();
+
+// source issues (handbook itself)
+const SOURCEISSUES=[{issue:"Territory not applied consistently (area/region → territory)",sev:"med",why:"For Venturing, areas and regions were replaced by territories (councils and national remain). Each remaining area/region reference is below.",items:[{page:"Page 188",cur:"Several of the regional Venturing websites provide a helpful listing of places your crew can go for its adventures: • www.",rep:"[Strike the entire paragraph and the four regional-website bullets that follow it — these former-Region sites (crventuring, wrventuring, nerventuring, srventuring) no longer exist.]"},{page:"Page 208",cur:"Participate in at least three additional (for a total of seven) Tier II or Tier III adventures at the crew, district, council, area, regional, or national level.",rep:"Participate in at least three additional (for a total of seven) Tier II or Tier III adventures at the crew, district, council, territory, or national level."}]},
+{issue:"“Personal Growth” (ALPS area) vs “personal development” (prose)",sev:"low",why:"The ALPS “P” is officially “Personal Growth.” The prose below uses “personal development” (likely origin of the website mislabeling).",items:[{page:"Page 60",cur:"Setting Personal Goals You might think that personal development is achieved by doing something extraordinary.",rep:"Setting Personal Goals You might think that personal growth is achieved by doing something extraordinary."},{page:"Page 61",cur:"Goal-setting can also help further your personal development.",rep:"Goal-setting can also help further your personal growth."},{page:"Page 68",cur:"The crew board of review exists to review your goals and accomplishments as well as to encourage you to continue your personal development through the crew’s activities and the Venturing program.",rep:"The crew board of review exists to review your goals and accomplishments as well as to encourage you to continue your personal growth through the crew’s activities and the Venturing program."}]}];
+$("#sourceList").innerHTML=SOURCEISSUES.map((s,i)=>{
+  const sev=s.sev==="med"?"<span class='tag'>MEDIUM</span>":"<span class='tag' style='background:#1c5a8a'>LOW</span>";
+  const items=s.items.map((it,j)=>
+    "<div class='ed'><div class='ed-sec'>Handbook "+it.page+"</div>"+
+    "<div class='ba'><div class='ba-find'><div class='ba-h'>Printed in the Handbook</div>"+diffHL(it.cur,it.rep).oldH+"</div>"+
+    "<div class='ba-rep'><div class='ba-h'>Should read <button class='copybtn' data-si='"+i+"' data-j='"+j+"'>Copy</button></div>"+diffHL(it.cur,it.rep).newH+"</div></div></div>").join("");
+  return "<div class='pgcard'><div class='pgcard-h'><span class='pgcard-t'>"+s.issue+"</span>"+sev+"</div>"+
+    "<div class='ed'><div class='ed-why'>"+s.why+"</div></div>"+items+
+    (s.note?"<div class='ed'><div class='ed-note'>"+s.note+"</div></div>":"")+"</div>";
+}).join("");
+$("#sourceList").querySelectorAll(".copybtn").forEach(b=>b.onclick=()=>copyText(SOURCEISSUES[+b.dataset.si].items[+b.dataset.j].rep,b));
+
+// accuracy review
+const ACCURACY=[
+ {page:"Venturing Rank",url:V+"venturing-awards-and-advancement/rank-advancement/venturing-award/",status:"Discrepancy",
+  checked:"Handbook &ldquo;Venturing Rank Requirements&rdquo; (Ch.6, p.204)",
+  findings:["Requirements 1&ndash;3 match the Handbook exactly (crew activity outside a meeting; interview with crew president &amp; Advisor; Personal Safety Awareness training).","<b>Requirement 4 is outdated.</b> The live page says only &ldquo;State intention to join the crew during a crew induction ceremony.&rdquo; The Handbook&rsquo;s req 4 also has you repeat and commit to the Scout Oath, Scout Law, and the Venturing motto, &ldquo;Lead the Adventure.&rdquo;","Also carries the scoutstuff.org link and the &ldquo;Venturing Award&rdquo; title/slug (see Copy Callouts)."],
+  fix:"State your intention to join the crew by participating in an induction ceremony during which you repeat and commit to live by the Scout Oath and Scout Law and the Venturing motto: Lead the Adventure."},
+ {page:"Rank Advancement",url:V+"venturing-awards-and-advancement/rank-advancement/",status:"Discrepancy",
+  checked:"Handbook ALPS model + rank descriptions (Ch.1)",
+  findings:["Rank structure and descriptions align with the Handbook.","One correction already captured in Page Edits: ALPS &ldquo;personal development&rdquo; &rarr; &ldquo;personal growth.&rdquo;"]},
+ {page:"Discovery / Pathfinder / Summit Rank",url:V+"venturing-awards-and-advancement/rank-advancement/",status:"Discrepancy",
+  checked:"Handbook Discovery / Pathfinder / Summit Rank Requirements (Ch.6)",
+  findings:["Requirements compared line-by-line. The bodies of the requirements match the Handbook, with these exceptions now in Page Edits:","<b>Org level out of date</b> &mdash; each Adventure requirement lists &ldquo;area, regional&rdquo;; the Handbook uses &ldquo;territory&rdquo; (areas/regions became territories).","<b>Summit typo</b> &mdash; intro says &ldquo;strengthen your community be designing&rdquo; (should be &ldquo;by designing&rdquo;).","Plus the retired scoutstuff.org link on the Venturing Rank, Pathfinder, and Summit pages (Discovery already uses ScoutShop.org)."]},
+ {page:"Site-wide: area / region \u2192 territory",url:V,status:"Discrepancy",
+  checked:"All 44 pages scanned for org-hierarchy &ldquo;area / region / regional&rdquo;",
+  findings:["<b>Current structure to fix</b> (now in Page Edits): the three rank pages, Venturing Resources (SOPs tiers), Venturing Terminology (VOA structure), VOA landing (insignia line), and Apply to be a VOA Officer.","<b>Left as historical \u2014 do NOT change:</b> the History page (it describes the former regional structure) and advisor bios on Meet Your Advisors (past roles/awards like &ldquo;Central Region Area 5&rdquo; are part of the record).","<b>Resolved per committee:</b> the NVOA&rsquo;s former &ldquo;four Regional Presidents&rdquo; becomes &ldquo;14 Territory Support Presidents and 14 Territory Support Vice Presidents&rdquo; (now in Page Edits)."]},
+ {page:"The ALPS Model",url:V+"about-venturing/the-alps-model/",status:"Verified",
+  checked:"Handbook ALPS model (Ch.1)",
+  findings:["Matches the Handbook: &ldquo;A-L-P-S: Adventure, Leadership, Personal Growth, Service,&rdquo; and correctly uses &ldquo;areas of emphasis&rdquo; (the ALPS term, not the org level). No changes needed."]},
+ {page:"Specialty Awards (Ranger / Quest / TRUST)",url:V+"venturing-awards-and-advancement/specialty-awards/",status:"Verified",
+  checked:"Handbook specialty awards",
+  findings:["Ranger, Quest, and TRUST all present with accurate descriptions. No gendered language, no &ldquo;personal development,&rdquo; no scoutstuff link. No changes needed."]},
+ {page:"Leadership Awards",url:V+"venturing-awards-and-advancement/leadership/",status:"Discrepancy",
+  checked:"Live read vs org structure &amp; style",
+  findings:["VLA line lists &ldquo;councils, areas, regions&rdquo; &rarr; territory (now in Page Edits)."]},
+ {page:"All remaining content pages (full sweep)",url:V,status:"Verified",
+  checked:"Every page read + full-text scan for branding, BSA, ALPS, dead links, and area/region",
+  findings:["<b>Every one of the 44 pages now has a status</b> (Verified or Needs fix) \u2014 none left as &ldquo;Scanned.&rdquo;","<b>New fixes found &amp; added to Page Edits:</b> Uniform Guide, Adult Trainings, Connect, SOPs, and VOA Insignia (territory); Annual Program Planning (the only standalone &ldquo;BSA&rdquo; on the site).","<b>Needs comms review:</b> the Social Media page is organized by the four former Regions and uses the @VenturingBSA handle \u2014 external accounts to confirm, not auto-edit.","<b>Left as historical (no change):</b> Our History, Meet Your Advisors, and Past NVOA Officers describe past regional roles and are part of the record."]}
+];
+const acTag=s=>s==="Discrepancy"?"<span class='tag'>DISCREPANCY</span>":s==="In review"?"<span class='tag' style='background:#b8860b'>IN REVIEW</span>":s==="Verified"?"<span class='tag ok'>VERIFIED</span>":"<span class='tag' style='background:#1c5a8a'>SCANNED</span>";
+const acCls=s=>s==="Discrepancy"?"decision":s==="In review"?"verify":"";
+$("#accuracyList").innerHTML=ACCURACY.map((a,i)=>{
+  const fx=a.fix?"<div class='blockbox'><div class='blockbox-h'><span>Corrected requirement &mdash; paste this</span><button class='accopy' data-i='"+i+"'>Copy block</button></div><div class='blocktext' id='ac-"+i+"'>"+a.fix+"</div></div>":"";
+  return "<div class='co "+acCls(a.status)+"'>"+
+    "<div class='co-head'><span class='co-title'>"+a.page+"</span>"+acTag(a.status)+"<a class='loc-link' href='"+a.url+"' target='_blank' rel='noopener'>open &#8599;</a></div>"+
+    "<div class='co-src' style='margin:2px 0 8px'>Checked against: "+a.checked+"</div>"+
+    "<ul style='margin:0 0 4px 18px;font-size:12.5px;line-height:1.5'>"+a.findings.map(f=>"<li>"+f+"</li>").join("")+"</ul>"+fx+
+  "</div>";
+}).join("");
+$("#accuracyList").querySelectorAll(".accopy").forEach(b=>b.onclick=()=>copyText(ACCURACY[+b.dataset.i].fix,b));
+
+// tabs
+var TABPANELS={callouts:["tracker"]};
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  (TABPANELS[b.dataset.t]||[b.dataset.t]).forEach(function(id){var el=$("#"+id);if(el)el.classList.add("active");});
+});
+// Collaborator view: show ONLY the combined tab. Add #admin (or ?admin) to the URL to reveal the rest.
+var ADMIN=(function(){try{var s=(location.search||"")+(location.hash||"");try{if(window.top&&window.top!==window){s+=(window.top.location.search||"")+(window.top.location.hash||"");}}catch(e){}return /admin/i.test(s);}catch(e){return false;}})();
+if(!ADMIN){document.querySelectorAll(".tab").forEach(function(b){if(b.dataset.t!=="callouts")b.style.display="none";});}
+
+chips($("#chips"));chips($("#chips2"));render();
+</script>
+</body>
+</html>
